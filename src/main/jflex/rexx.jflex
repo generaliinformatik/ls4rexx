@@ -62,7 +62,7 @@ WHITE_SPACE_CHAR=[\n\r\ \b\012]
 DQUOTE_STRING_TEXT=(\"\"|[^\n\r\"]|\\{WHITE_SPACE_CHAR}+\\)*
 SQUOTE_STRING_TEXT=(''|[^\n\r']|\\{WHITE_SPACE_CHAR}+\\)*
 COMMENT_TEXT=([^*/\n]|[^*\n]"/"[^*\n]|[^/\n]"*"[^/\n]|"*"[^/\n]|"/"[^*\n])+
-Ident = {ALPHA}({ALPHA}|{DIGIT}|_)*
+IDENT = {ALPHA}(\.|{ALPHA}|{DIGIT})*
 
 %%
 
@@ -70,6 +70,42 @@ Ident = {ALPHA}({ALPHA}|{DIGIT}|_)*
 * State YYINITIAL
 *-------------------------------------------------------------------------------------*/
 <YYINITIAL> {
+ "ADDRESS"   { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "ARG"       { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "CALL"      { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "DO"        { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "END"       { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "TO"        { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "BY"        { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "FOR"       { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "FOREVER"   { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "WHILE"     { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "DROP"      { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "EXIT"      { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "IF"        { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "THEN"      { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "ELSE"      { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "INTERPRET" { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "ITERATE"   { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "LEAVE"     { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "NOP"       { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "NUMERIC"   { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "OPTIONS"   { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "PARSE"     { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "PROCEDUR"  { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "EXPOSE"    { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "PULL"      { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "PUSH"      { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "QUEUE"     { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "RETURN"    { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "SAY"       { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "SELECT"    { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "WHEN"      { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "SIGNAL"    { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "TRACE"     { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+ "UPPER"     { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar,yychar+1)); }
+
+
   ","   { return (new RexxToken(COMMA,yytext(),yyline,yycolumn,yychar,yychar+1)); }
   ":"   { return (new RexxToken(COLON,yytext(),yyline,yycolumn,yychar,yychar+1)); }
   ";"   { return (new RexxToken(SEMICOLON,yytext(),yyline,yycolumn,yychar,yychar+1)); }
@@ -131,7 +167,7 @@ Ident = {ALPHA}({ALPHA}|{DIGIT}|_)*
 
   {DIGIT}+ { return (new RexxToken(NUMBER,yytext(),yyline,yycolumn,yychar,yychar+yylength())); }
 
-  {Ident} { return (new RexxToken(IDENTIFIER,yytext(),yyline,yycolumn,yychar,yychar+yylength())); }
+  {IDENT} { return (new RexxToken(IDENTIFIER,yytext(),yyline,yycolumn,yychar,yychar+yylength())); }
 }
 
 /*--------------------------------------------------------------------------------------

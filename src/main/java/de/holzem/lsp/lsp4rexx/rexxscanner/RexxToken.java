@@ -32,7 +32,7 @@ public class RexxToken {
 		checkArgument("charBegin", pCharBegin >= 0);
 		checkArgument("charEnd", pCharEnd > 0);
 		_type = pType;
-		_text = pText;
+		_text = adaptTokenText(pText, pType);
 		_line = pLine;
 		_column = pColumn;
 		_charBegin = pCharBegin;
@@ -87,6 +87,17 @@ public class RexxToken {
 		sb.append(_text.replaceAll("\n", "\\n").replaceAll("\r", "\\r").replaceAll("\t", "\\t"));
 		sb.append("\")");
 		return sb.toString();
+	}
+
+	private String adaptTokenText(final String pText, final TokenType pType)
+	{
+		switch (pType) {
+		case KEYWORD:
+			return pText.toLowerCase();
+		default:
+			break;
+		}
+		return pText;
 	}
 
 	private void checkArgument(final String argName, final boolean expectation)

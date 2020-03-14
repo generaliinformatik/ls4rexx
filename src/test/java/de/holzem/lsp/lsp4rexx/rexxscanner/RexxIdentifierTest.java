@@ -32,7 +32,7 @@ import de.holzem.lsp.lsp4rexx.rexxscanner.testutils.RexxLexerBuilder;
  */
 public class RexxIdentifierTest {
 	@Test
-	public void testSimpleDQuoteString() throws IOException
+	public void testIdentifier() throws IOException
 	{
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.addln("myVar")//
@@ -57,6 +57,32 @@ public class RexxIdentifierTest {
 		stringToken = lexer.nextToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.IDENTIFIER)));
 		assertThat(stringToken.getText(), is(equalTo("§atsign")));
+		assertThat(lexer.nextToken(), is(nullValue()));
+		assertThat(lexer.getRexxErrors().getErrors(), is(empty()));
+	}
+
+	@Test
+	public void testStemVar() throws IOException
+	{
+		final RexxLexer lexer = new RexxLexerBuilder() //
+				.addln("stem.1.firstname")//
+				.addln("stem.1.lastname")//
+				.addln("stem.0")//
+				.addln("stem.")//
+				.build();
+		RexxToken stringToken;
+		stringToken = lexer.nextToken();
+		assertThat(stringToken.getType(), is(equalTo(TokenType.IDENTIFIER)));
+		assertThat(stringToken.getText(), is(equalTo("stem.1.firstname")));
+		stringToken = lexer.nextToken();
+		assertThat(stringToken.getType(), is(equalTo(TokenType.IDENTIFIER)));
+		assertThat(stringToken.getText(), is(equalTo("stem.1.lastname")));
+		stringToken = lexer.nextToken();
+		assertThat(stringToken.getType(), is(equalTo(TokenType.IDENTIFIER)));
+		assertThat(stringToken.getText(), is(equalTo("stem.0")));
+		stringToken = lexer.nextToken();
+		assertThat(stringToken.getType(), is(equalTo(TokenType.IDENTIFIER)));
+		assertThat(stringToken.getText(), is(equalTo("stem.")));
 		assertThat(lexer.nextToken(), is(nullValue()));
 		assertThat(lexer.getRexxErrors().getErrors(), is(empty()));
 	}

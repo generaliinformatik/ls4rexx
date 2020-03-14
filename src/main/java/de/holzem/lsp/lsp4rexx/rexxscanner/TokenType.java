@@ -50,6 +50,7 @@ public enum TokenType {
 	STRING,
 	STRING_UNCLOSED,
 	NUMBER,
-	IDENTIFIER
+	IDENTIFIER,
+	KEYWORD
 
 }
