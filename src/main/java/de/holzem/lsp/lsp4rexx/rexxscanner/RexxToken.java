@@ -22,19 +22,21 @@ public class RexxToken {
 	private final TokenType _type;
 	private final String _text;
 	private final int _line;
+	private final int _column;
 	private final long _charBegin;
 	private final long _charEnd;
 
-	public RexxToken(final TokenType pType, final String text, final int line, final long charBegin,
-			final long charEnd) {
-		checkArgument("line", line >= 0);
-		checkArgument("charBegin", charBegin >= 0);
-		checkArgument("charEnd", charEnd > 0);
+	public RexxToken(final TokenType pType, final String pText, final int pLine, final int pColumn,
+			final long pCharBegin, final long pCharEnd) {
+		checkArgument("line", pLine >= 0);
+		checkArgument("charBegin", pCharBegin >= 0);
+		checkArgument("charEnd", pCharEnd > 0);
 		_type = pType;
-		_text = text;
-		_line = line;
-		_charBegin = charBegin;
-		_charEnd = charEnd;
+		_text = pText;
+		_line = pLine;
+		_column = pColumn;
+		_charBegin = pCharBegin;
+		_charEnd = pCharEnd;
 	}
 
 	public TokenType getType()
@@ -50,6 +52,11 @@ public class RexxToken {
 	public int getLine()
 	{
 		return _line;
+	}
+
+	public int getColumn()
+	{
+		return _column;
 	}
 
 	public long getCharBegin()
@@ -68,15 +75,17 @@ public class RexxToken {
 		final StringBuilder sb = new StringBuilder();
 		sb.append("RexxToken(");
 		sb.append(_type.toString());
+		sb.append(":(");
+		sb.append(_line);
 		sb.append(":");
+		sb.append(_column);
+		sb.append("):(");
 		sb.append(_charBegin);
 		sb.append(":");
 		sb.append(_charEnd);
-		sb.append(":\"");
+		sb.append("):\"");
 		sb.append(_text.replaceAll("\n", "\\n").replaceAll("\r", "\\r").replaceAll("\t", "\\t"));
 		sb.append("\")");
-		// return "Text : " + _text + "\nindex : " + _index + "\nline : " + _line + "\ncBeg. : " + _charBegin
-		// + "\ncEnd. : " + _charEnd;
 		return sb.toString();
 	}
 

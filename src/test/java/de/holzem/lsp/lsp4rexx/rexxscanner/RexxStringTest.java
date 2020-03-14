@@ -38,7 +38,6 @@ public class RexxStringTest {
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("\"string\"").build();
 		final RexxToken stringToken = lexer.nextToken();
-		System.out.println(stringToken);
 		assertThat(stringToken.getType(), is(equalTo(TokenType.STRING)));
 		assertThat(stringToken.getText(), is(equalTo("string")));
 		assertThat(lexer.nextToken(), is(nullValue()));
@@ -51,11 +50,9 @@ public class RexxStringTest {
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("\"string1\" \"string2\"").build();
 		final RexxToken string1Token = lexer.nextToken();
-		System.out.println(string1Token);
 		assertThat(string1Token.getType(), is(equalTo(TokenType.STRING)));
 		assertThat(string1Token.getText(), is(equalTo("string1")));
 		final RexxToken string2Token = lexer.nextToken();
-		System.out.println(string2Token);
 		assertThat(string2Token.getType(), is(equalTo(TokenType.STRING)));
 		assertThat(string2Token.getText(), is(equalTo("string2")));
 		assertThat(lexer.nextToken(), is(nullValue()));
@@ -68,7 +65,6 @@ public class RexxStringTest {
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("\"string").build();
 		final RexxToken stringToken = lexer.nextToken();
-		System.out.println(stringToken);
 		assertThat(stringToken.getType(), is(equalTo(TokenType.STRING_UNCLOSED)));
 		assertThat(stringToken.getText(), is(equalTo("string")));
 		assertThat(lexer.nextToken(), is(nullValue()));
@@ -81,7 +77,6 @@ public class RexxStringTest {
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("\"--\"\"--\"").build();
 		final RexxToken stringToken = lexer.nextToken();
-		System.out.println(stringToken);
 		assertThat(stringToken.getType(), is(equalTo(TokenType.STRING)));
 		assertThat(stringToken.getText(), is(equalTo("--\"--")));
 		assertThat(lexer.nextToken(), is(nullValue()));
@@ -94,7 +89,6 @@ public class RexxStringTest {
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("'string'").build();
 		final RexxToken stringToken = lexer.nextToken();
-		System.out.println(stringToken);
 		assertThat(stringToken.getType(), is(equalTo(TokenType.STRING)));
 		assertThat(stringToken.getText(), is(equalTo("string")));
 		assertThat(lexer.nextToken(), is(nullValue()));
@@ -107,11 +101,9 @@ public class RexxStringTest {
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("'string1' 'string2'").build();
 		final RexxToken string1Token = lexer.nextToken();
-		System.out.println(string1Token);
 		assertThat(string1Token.getType(), is(equalTo(TokenType.STRING)));
 		assertThat(string1Token.getText(), is(equalTo("string1")));
 		final RexxToken string2Token = lexer.nextToken();
-		System.out.println(string2Token);
 		assertThat(string2Token.getType(), is(equalTo(TokenType.STRING)));
 		assertThat(string2Token.getText(), is(equalTo("string2")));
 		assertThat(lexer.nextToken(), is(nullValue()));
@@ -124,7 +116,6 @@ public class RexxStringTest {
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("'string").build();
 		final RexxToken stringToken = lexer.nextToken();
-		System.out.println(stringToken);
 		assertThat(stringToken.getType(), is(equalTo(TokenType.STRING_UNCLOSED)));
 		assertThat(stringToken.getText(), is(equalTo("string")));
 		assertThat(lexer.nextToken(), is(nullValue()));
@@ -137,7 +128,6 @@ public class RexxStringTest {
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("'--''--'").build();
 		final RexxToken stringToken = lexer.nextToken();
-		System.out.println(stringToken);
 		assertThat(stringToken.getType(), is(equalTo(TokenType.STRING)));
 		assertThat(stringToken.getText(), is(equalTo("--'--")));
 		assertThat(lexer.nextToken(), is(nullValue()));
@@ -150,11 +140,9 @@ public class RexxStringTest {
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add(" '\"' \"'\" ").build();
 		final RexxToken string1Token = lexer.nextToken();
-		System.out.println(string1Token);
 		assertThat(string1Token.getType(), is(equalTo(TokenType.STRING)));
 		assertThat(string1Token.getText(), is(equalTo("\"")));
 		final RexxToken string2Token = lexer.nextToken();
-		System.out.println(string2Token);
 		assertThat(string2Token.getType(), is(equalTo(TokenType.STRING)));
 		assertThat(string2Token.getText(), is(equalTo("'")));
 		assertThat(lexer.nextToken(), is(nullValue()));
