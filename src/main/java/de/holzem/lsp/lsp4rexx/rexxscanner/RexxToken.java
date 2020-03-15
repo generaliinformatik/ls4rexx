@@ -27,6 +27,11 @@ public class RexxToken {
 	private final long _charEnd;
 
 	public RexxToken(final TokenType pType, final String pText, final int pLine, final int pColumn,
+			final long pCharBegin) {
+		this(pType, pText, pLine, pColumn, pCharBegin, pCharBegin + pText.length());
+	}
+
+	public RexxToken(final TokenType pType, final String pText, final int pLine, final int pColumn,
 			final long pCharBegin, final long pCharEnd) {
 		checkArgument("line", pLine >= 0);
 		checkArgument("charBegin", pCharBegin >= 0);

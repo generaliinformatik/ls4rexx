@@ -51,6 +51,7 @@ public enum TokenType {
 	STRING_UNCLOSED,
 	NUMBER,
 	IDENTIFIER,
-	KEYWORD
+	KEYWORD,
+	FUNCTION
 
 }
