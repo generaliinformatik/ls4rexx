@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.holzem.lsp.lsp4rexx.rexxscanner;
+package de.holzem.lsp.lsp4rexx.rexxscanner.strings;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -25,12 +25,16 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
+import de.holzem.lsp.lsp4rexx.rexxscanner.RexxLexer;
+import de.holzem.lsp.lsp4rexx.rexxscanner.RexxToken;
+import de.holzem.lsp.lsp4rexx.rexxscanner.TokenType;
 import de.holzem.lsp.lsp4rexx.rexxscanner.testutils.RexxLexerBuilder;
 
 /**
  * RexxOperatorTest
  */
-public class RexxOperatorTest {
+public class RexxOperatorTest
+{
 
 	@Test
 	public void testMiscOperators() throws IOException
