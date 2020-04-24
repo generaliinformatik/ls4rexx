@@ -35,35 +35,34 @@ import de.holzem.lsp.lsp4rexx.rexxscanner.testutils.RexxLexerBuilder;
  */
 public class RexxOperatorTest
 {
-
 	@Test
 	public void testMiscOperators() throws IOException
 	{
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add(",:;().!!").build();
 		RexxToken stringToken;
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.COMMA)));
 		assertThat(stringToken.getText(), is(equalTo(",")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.COLON)));
 		assertThat(stringToken.getText(), is(equalTo(":")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.SEMICOLON)));
 		assertThat(stringToken.getText(), is(equalTo(";")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.LEFT_PARENTHESIS)));
 		assertThat(stringToken.getText(), is(equalTo("(")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.RIGHT_PARENTHESIS)));
 		assertThat(stringToken.getText(), is(equalTo(")")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.DOT)));
 		assertThat(stringToken.getText(), is(equalTo(".")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.CONCAT)));
 		assertThat(stringToken.getText(), is(equalTo("!!")));
-		assertThat(lexer.nextToken(), is(nullValue()));
+		assertThat(lexer.nextRealToken(), is(nullValue()));
 		assertThat(lexer.getRexxErrors().getErrors(), is(empty()));
 	}
 
@@ -73,25 +72,25 @@ public class RexxOperatorTest
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("+-*///%").build();
 		RexxToken stringToken;
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.PLUS)));
 		assertThat(stringToken.getText(), is(equalTo("+")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.MINUS)));
 		assertThat(stringToken.getText(), is(equalTo("-")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.MULTI)));
 		assertThat(stringToken.getText(), is(equalTo("*")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.DIVIDE_INTEGER)));
 		assertThat(stringToken.getText(), is(equalTo("//")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.DIVIDE)));
 		assertThat(stringToken.getText(), is(equalTo("/")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.DIVIDE_REMAINDER)));
 		assertThat(stringToken.getText(), is(equalTo("%")));
-		assertThat(lexer.nextToken(), is(nullValue()));
+		assertThat(lexer.nextRealToken(), is(nullValue()));
 		assertThat(lexer.getRexxErrors().getErrors(), is(empty()));
 	}
 
@@ -101,31 +100,31 @@ public class RexxOperatorTest
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("= ^= <> >< < <= > >=").build();
 		RexxToken stringToken;
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.EQ)));
 		assertThat(stringToken.getText(), is(equalTo("=")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.NE)));
 		assertThat(stringToken.getText(), is(equalTo("^=")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.NE)));
 		assertThat(stringToken.getText(), is(equalTo("<>")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.NE)));
 		assertThat(stringToken.getText(), is(equalTo("><")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.LT)));
 		assertThat(stringToken.getText(), is(equalTo("<")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.LE)));
 		assertThat(stringToken.getText(), is(equalTo("<=")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.GT)));
 		assertThat(stringToken.getText(), is(equalTo(">")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.GE)));
 		assertThat(stringToken.getText(), is(equalTo(">=")));
-		assertThat(lexer.nextToken(), is(nullValue()));
+		assertThat(lexer.nextRealToken(), is(nullValue()));
 		assertThat(lexer.getRexxErrors().getErrors(), is(empty()));
 	}
 
@@ -135,25 +134,25 @@ public class RexxOperatorTest
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("== ^== << <<= >> >>=").build();
 		RexxToken stringToken;
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.STRICT_EQ)));
 		assertThat(stringToken.getText(), is(equalTo("==")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.STRICT_NE)));
 		assertThat(stringToken.getText(), is(equalTo("^==")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.STRICT_LT)));
 		assertThat(stringToken.getText(), is(equalTo("<<")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.STRICT_LE)));
 		assertThat(stringToken.getText(), is(equalTo("<<=")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.STRICT_GT)));
 		assertThat(stringToken.getText(), is(equalTo(">>")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.STRICT_GE)));
 		assertThat(stringToken.getText(), is(equalTo(">>=")));
-		assertThat(lexer.nextToken(), is(nullValue()));
+		assertThat(lexer.nextRealToken(), is(nullValue()));
 		assertThat(lexer.getRexxErrors().getErrors(), is(empty()));
 	}
 
@@ -163,17 +162,16 @@ public class RexxOperatorTest
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("& ! ^").build();
 		RexxToken stringToken;
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.AND)));
 		assertThat(stringToken.getText(), is(equalTo("&")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.OR)));
 		assertThat(stringToken.getText(), is(equalTo("!")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.NOT)));
 		assertThat(stringToken.getText(), is(equalTo("^")));
-		assertThat(lexer.nextToken(), is(nullValue()));
+		assertThat(lexer.nextRealToken(), is(nullValue()));
 		assertThat(lexer.getRexxErrors().getErrors(), is(empty()));
 	}
-
 }

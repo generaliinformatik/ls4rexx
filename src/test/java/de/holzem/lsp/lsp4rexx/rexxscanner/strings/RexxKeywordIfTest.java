@@ -33,7 +33,8 @@ import de.holzem.lsp.lsp4rexx.rexxscanner.testutils.RexxLexerBuilder;
 /**
  * RexxKeywordIfTest
  */
-public class RexxKeywordIfTest {
+public class RexxKeywordIfTest
+{
 	@Test
 	public void testIfStatement() throws IOException
 	{
@@ -44,37 +45,37 @@ public class RexxKeywordIfTest {
 				.addln("  say 'a^=15'")//
 				.build();
 		RexxToken stringToken;
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.KEYWORD)));
 		assertThat(stringToken.getText(), is(equalTo("if")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.IDENTIFIER)));
 		assertThat(stringToken.getText(), is(equalTo("a")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.EQ)));
 		assertThat(stringToken.getText(), is(equalTo("=")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.NUMBER)));
 		assertThat(stringToken.getText(), is(equalTo("15")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.KEYWORD)));
 		assertThat(stringToken.getText(), is(equalTo("then")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.KEYWORD)));
 		assertThat(stringToken.getText(), is(equalTo("say")));
-		stringToken = lexer.nextToken();
-		assertThat(stringToken.getType(), is(equalTo(TokenType.STRING)));
-		assertThat(stringToken.getText(), is(equalTo("a=15")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
+		assertThat(stringToken.getType(), is(equalTo(TokenType.SQUOTE_STRING)));
+		assertThat(stringToken.getText(), is(equalTo("'a=15'")));
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.KEYWORD)));
 		assertThat(stringToken.getText(), is(equalTo("else")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.KEYWORD)));
 		assertThat(stringToken.getText(), is(equalTo("say")));
-		stringToken = lexer.nextToken();
-		assertThat(stringToken.getType(), is(equalTo(TokenType.STRING)));
-		assertThat(stringToken.getText(), is(equalTo("a^=15")));
-		assertThat(lexer.nextToken(), is(nullValue()));
+		stringToken = lexer.nextRealToken();
+		assertThat(stringToken.getType(), is(equalTo(TokenType.SQUOTE_STRING)));
+		assertThat(stringToken.getText(), is(equalTo("'a^=15'")));
+		assertThat(lexer.nextRealToken(), is(nullValue()));
 		assertThat(lexer.getRexxErrors().getErrors(), is(empty()));
 	}
 }

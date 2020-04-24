@@ -25,7 +25,26 @@ import static de.holzem.lsp.lsp4rexx.rexxscanner.RexxError.*;
 %public
 
 %{
-  private int _commentCount = 0;
+  private int           _commentCount  = 0;
+  private long          _commentChar   = 0L;
+  private int           _commentLine   = 0;
+  private int           _commentColumn = 0;
+  private StringBuilder _commentText   = new StringBuilder();
+
+  /**
+   * Resumes scanning until the next regular expression is matched, the end of input is encountered
+   * or an I/O-Error occurs. WHITESPACE and REXX_COMMENT Tokens are skipped.
+   *
+   * @return the next token.
+   * @exception java.io.IOException if any I/O-Error occurs.
+   */
+  public RexxToken nextRealToken() throws java.io.IOException {
+    RexxToken nextToken = null;
+    do {
+      nextToken = nextToken();
+    } while (nextToken != null && (nextToken.getType() == REXX_COMMENT || nextToken.getType() == WHITESPACE));
+    return nextToken;
+  }
 
   private RexxErrors _rexxErrors = new RexxErrors();
 
@@ -229,50 +248,44 @@ IDENT = {ALPHA}(\.|{ALPHA}|{DIGIT})*
   "^"   { return (new RexxToken(NOT,yytext(),yyline,yycolumn,yychar)); }
   "!!"  { return (new RexxToken(CONCAT,yytext(),yyline,yycolumn,yychar)); }
 
-  {NONNEWLINE_WHITE_SPACE_CHAR}+ { }
+  {NONNEWLINE_WHITE_SPACE_CHAR}+ { return (new RexxToken(WHITESPACE,yytext(),yyline,yycolumn,yychar)); }
 
-  "/*" { yybegin(COMMENT); _commentCount++; }
+  "/*" { yybegin(COMMENT); _commentLine = yyline; _commentColumn = yycolumn; _commentChar = yychar; _commentText = new StringBuilder("/*"); _commentCount++; }
 
   \"{DQUOTE_STRING_TEXT}\" {
-    String str =  yytext().substring(1,yylength()-1);
-    return (new RexxToken(STRING,str.replaceAll("\"\"", "\""),yyline,yycolumn,yychar,yychar+yylength()));
+    return (new RexxToken(DQUOTE_STRING,yytext(),yyline,yycolumn,yychar));
   }
 
   \"{DQUOTE_STRING_TEXT} {
-    String str =  yytext().substring(1,yytext().length());
     addError(E_UNCLOSED_STRING);
-    
-    return (new RexxToken(STRING_UNCLOSED,str,yyline,yycolumn,yychar,yychar + str.length()));
+    return (new RexxToken(DQUOTE_STRING_UNCLOSED,yytext(),yyline,yycolumn,yychar));
   }
 
   '{SQUOTE_STRING_TEXT}' {
-    String str =  yytext().substring(1,yylength()-1);
-    return (new RexxToken(STRING,str.replaceAll("''", "'"),yyline,yycolumn,yychar,yychar+yylength()));
+    return (new RexxToken(SQUOTE_STRING,yytext(),yyline,yycolumn,yychar));
   }
 
   '{SQUOTE_STRING_TEXT} {
-    String str =  yytext().substring(1,yytext().length());
     addError(E_UNCLOSED_STRING);
-    
-    return (new RexxToken(STRING_UNCLOSED,str,yyline,yycolumn,yychar,yychar + str.length()));
+    return (new RexxToken(SQUOTE_STRING_UNCLOSED,yytext(),yyline,yycolumn,yychar));
   }
 
-  {DIGIT}+ { return (new RexxToken(NUMBER,yytext(),yyline,yycolumn,yychar,yychar+yylength())); }
+  {DIGIT}+ { return (new RexxToken(NUMBER,yytext(),yyline,yycolumn,yychar)); }
 
-  {IDENT} { return (new RexxToken(IDENTIFIER,yytext(),yyline,yycolumn,yychar,yychar+yylength())); }
+  {IDENT} { return (new RexxToken(IDENTIFIER,yytext(),yyline,yycolumn,yychar)); }
+
+  {NEWLINE} { return (new RexxToken(WHITESPACE,yytext(),yyline,yycolumn,yychar,yychar+yylength())); }
 }
 
 /*--------------------------------------------------------------------------------------
 * State COMMENT
 *-------------------------------------------------------------------------------------*/
 <COMMENT> {
-  "/*" { _commentCount++; }
-  "*/" { if (--_commentCount == 0) yybegin(YYINITIAL); }
-  {COMMENT_TEXT} { }
+  "/*" { _commentCount++; _commentText.append(yytext()); }
+  "*/" { _commentText.append(yytext()); if (--_commentCount == 0) { yybegin(YYINITIAL); return (new RexxToken(REXX_COMMENT,_commentText.toString(),_commentLine,_commentColumn,_commentChar)); } }
+  {COMMENT_TEXT} { _commentText.append(yytext()); }
+  {NEWLINE} { _commentText.append(yytext()); }
 }
-
-
-{NEWLINE} { }
 
 . {
   System.out.println("Illegal character: <" + yytext() + ">");

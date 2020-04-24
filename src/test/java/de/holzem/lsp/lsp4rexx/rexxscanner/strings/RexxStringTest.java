@@ -34,16 +34,16 @@ import de.holzem.lsp.lsp4rexx.rexxscanner.testutils.RexxLexerBuilder;
 /**
  * RexxStringTest
  */
-public class RexxStringTest {
-
+public class RexxStringTest
+{
 	@Test
 	public void testSimpleDQuoteString() throws IOException
 	{
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("\"string\"").build();
 		final RexxToken stringToken = lexer.nextToken();
-		assertThat(stringToken.getType(), is(equalTo(TokenType.STRING)));
-		assertThat(stringToken.getText(), is(equalTo("string")));
+		assertThat(stringToken.getType(), is(equalTo(TokenType.DQUOTE_STRING)));
+		assertThat(stringToken.getText(), is(equalTo("\"string\"")));
 		assertThat(lexer.nextToken(), is(nullValue()));
 		assertThat(lexer.getRexxErrors().getErrors(), is(empty()));
 	}
@@ -54,11 +54,14 @@ public class RexxStringTest {
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("\"string1\" \"string2\"").build();
 		final RexxToken string1Token = lexer.nextToken();
-		assertThat(string1Token.getType(), is(equalTo(TokenType.STRING)));
-		assertThat(string1Token.getText(), is(equalTo("string1")));
+		assertThat(string1Token.getType(), is(equalTo(TokenType.DQUOTE_STRING)));
+		assertThat(string1Token.getText(), is(equalTo("\"string1\"")));
+		final RexxToken whitespaceToken = lexer.nextToken();
+		assertThat(whitespaceToken.getType(), is(equalTo(TokenType.WHITESPACE)));
+		assertThat(whitespaceToken.getText(), is(equalTo(" ")));
 		final RexxToken string2Token = lexer.nextToken();
-		assertThat(string2Token.getType(), is(equalTo(TokenType.STRING)));
-		assertThat(string2Token.getText(), is(equalTo("string2")));
+		assertThat(string2Token.getType(), is(equalTo(TokenType.DQUOTE_STRING)));
+		assertThat(string2Token.getText(), is(equalTo("\"string2\"")));
 		assertThat(lexer.nextToken(), is(nullValue()));
 		assertThat(lexer.getRexxErrors().getErrors(), is(empty()));
 	}
@@ -69,8 +72,8 @@ public class RexxStringTest {
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("\"string").build();
 		final RexxToken stringToken = lexer.nextToken();
-		assertThat(stringToken.getType(), is(equalTo(TokenType.STRING_UNCLOSED)));
-		assertThat(stringToken.getText(), is(equalTo("string")));
+		assertThat(stringToken.getType(), is(equalTo(TokenType.DQUOTE_STRING_UNCLOSED)));
+		assertThat(stringToken.getText(), is(equalTo("\"string")));
 		assertThat(lexer.nextToken(), is(nullValue()));
 		assertThat(lexer.getRexxErrors().getErrors().get(0), is(equalTo(RexxError.E_UNCLOSED_STRING)));
 	}
@@ -81,8 +84,8 @@ public class RexxStringTest {
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("\"--\"\"--\"").build();
 		final RexxToken stringToken = lexer.nextToken();
-		assertThat(stringToken.getType(), is(equalTo(TokenType.STRING)));
-		assertThat(stringToken.getText(), is(equalTo("--\"--")));
+		assertThat(stringToken.getType(), is(equalTo(TokenType.DQUOTE_STRING)));
+		assertThat(stringToken.getText(), is(equalTo("\"--\"\"--\"")));
 		assertThat(lexer.nextToken(), is(nullValue()));
 		assertThat(lexer.getRexxErrors().getErrors(), is(empty()));
 	}
@@ -93,8 +96,8 @@ public class RexxStringTest {
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("'string'").build();
 		final RexxToken stringToken = lexer.nextToken();
-		assertThat(stringToken.getType(), is(equalTo(TokenType.STRING)));
-		assertThat(stringToken.getText(), is(equalTo("string")));
+		assertThat(stringToken.getType(), is(equalTo(TokenType.SQUOTE_STRING)));
+		assertThat(stringToken.getText(), is(equalTo("'string'")));
 		assertThat(lexer.nextToken(), is(nullValue()));
 		assertThat(lexer.getRexxErrors().getErrors(), is(empty()));
 	}
@@ -105,11 +108,14 @@ public class RexxStringTest {
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("'string1' 'string2'").build();
 		final RexxToken string1Token = lexer.nextToken();
-		assertThat(string1Token.getType(), is(equalTo(TokenType.STRING)));
-		assertThat(string1Token.getText(), is(equalTo("string1")));
+		assertThat(string1Token.getType(), is(equalTo(TokenType.SQUOTE_STRING)));
+		assertThat(string1Token.getText(), is(equalTo("'string1'")));
+		final RexxToken whitespaceToken = lexer.nextToken();
+		assertThat(whitespaceToken.getType(), is(equalTo(TokenType.WHITESPACE)));
+		assertThat(whitespaceToken.getText(), is(equalTo(" ")));
 		final RexxToken string2Token = lexer.nextToken();
-		assertThat(string2Token.getType(), is(equalTo(TokenType.STRING)));
-		assertThat(string2Token.getText(), is(equalTo("string2")));
+		assertThat(string2Token.getType(), is(equalTo(TokenType.SQUOTE_STRING)));
+		assertThat(string2Token.getText(), is(equalTo("'string2'")));
 		assertThat(lexer.nextToken(), is(nullValue()));
 		assertThat(lexer.getRexxErrors().getErrors(), is(empty()));
 	}
@@ -120,8 +126,8 @@ public class RexxStringTest {
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("'string").build();
 		final RexxToken stringToken = lexer.nextToken();
-		assertThat(stringToken.getType(), is(equalTo(TokenType.STRING_UNCLOSED)));
-		assertThat(stringToken.getText(), is(equalTo("string")));
+		assertThat(stringToken.getType(), is(equalTo(TokenType.SQUOTE_STRING_UNCLOSED)));
+		assertThat(stringToken.getText(), is(equalTo("'string")));
 		assertThat(lexer.nextToken(), is(nullValue()));
 		assertThat(lexer.getRexxErrors().getErrors().get(0), is(equalTo(RexxError.E_UNCLOSED_STRING)));
 	}
@@ -132,8 +138,8 @@ public class RexxStringTest {
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("'--''--'").build();
 		final RexxToken stringToken = lexer.nextToken();
-		assertThat(stringToken.getType(), is(equalTo(TokenType.STRING)));
-		assertThat(stringToken.getText(), is(equalTo("--'--")));
+		assertThat(stringToken.getType(), is(equalTo(TokenType.SQUOTE_STRING)));
+		assertThat(stringToken.getText(), is(equalTo("'--''--'")));
 		assertThat(lexer.nextToken(), is(nullValue()));
 		assertThat(lexer.getRexxErrors().getErrors(), is(empty()));
 	}
@@ -143,14 +149,22 @@ public class RexxStringTest {
 	{
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add(" '\"' \"'\" ").build();
+		final RexxToken whitespaceToken1 = lexer.nextToken();
+		assertThat(whitespaceToken1.getType(), is(equalTo(TokenType.WHITESPACE)));
+		assertThat(whitespaceToken1.getText(), is(equalTo(" ")));
 		final RexxToken string1Token = lexer.nextToken();
-		assertThat(string1Token.getType(), is(equalTo(TokenType.STRING)));
-		assertThat(string1Token.getText(), is(equalTo("\"")));
+		assertThat(string1Token.getType(), is(equalTo(TokenType.SQUOTE_STRING)));
+		assertThat(string1Token.getText(), is(equalTo("'\"'")));
+		final RexxToken whitespaceToken2 = lexer.nextToken();
+		assertThat(whitespaceToken2.getType(), is(equalTo(TokenType.WHITESPACE)));
+		assertThat(whitespaceToken2.getText(), is(equalTo(" ")));
 		final RexxToken string2Token = lexer.nextToken();
-		assertThat(string2Token.getType(), is(equalTo(TokenType.STRING)));
-		assertThat(string2Token.getText(), is(equalTo("'")));
+		assertThat(string2Token.getType(), is(equalTo(TokenType.DQUOTE_STRING)));
+		assertThat(string2Token.getText(), is(equalTo("\"'\"")));
+		final RexxToken whitespaceToken3 = lexer.nextToken();
+		assertThat(whitespaceToken3.getType(), is(equalTo(TokenType.WHITESPACE)));
+		assertThat(whitespaceToken3.getText(), is(equalTo(" ")));
 		assertThat(lexer.nextToken(), is(nullValue()));
 		assertThat(lexer.getRexxErrors().getErrors(), is(empty()));
 	}
-
 }

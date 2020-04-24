@@ -18,7 +18,8 @@ package de.holzem.lsp.lsp4rexx.rexxscanner;
 /**
  * RexxToken represents a token returned from the scanner
  */
-public class RexxToken {
+public class RexxToken
+{
 	private final TokenType _type;
 	private final String _text;
 	private final int _line;
@@ -89,7 +90,7 @@ public class RexxToken {
 		sb.append(":");
 		sb.append(_charEnd);
 		sb.append("):\"");
-		sb.append(_text.replaceAll("\n", "\\n").replaceAll("\r", "\\r").replaceAll("\t", "\\t"));
+		sb.append(_text.replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r").replaceAll("\t", "\\\\t"));
 		sb.append("\")");
 		return sb.toString();
 	}

@@ -33,7 +33,8 @@ import de.holzem.lsp.lsp4rexx.rexxscanner.testutils.RexxLexerBuilder;
 /**
  * RexxKeywordTest
  */
-public class RexxKeywordTest {
+public class RexxKeywordTest
+{
 	@Test
 	public void testKeywordCaseIgnore() throws IOException
 	{
@@ -43,21 +44,20 @@ public class RexxKeywordTest {
 				.addln("aDDress")//
 				.build();
 		RexxToken stringToken;
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.KEYWORD)));
 		assertThat(stringToken.getText(), is(equalTo("address")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.KEYWORD)));
 		assertThat(stringToken.getText(), is(equalTo("address")));
 		assertThat(stringToken.getCharBegin(), is(equalTo(9L)));
 		assertThat(stringToken.getCharEnd(), is(equalTo(16L)));
 		assertThat(stringToken.getLine(), is(equalTo(1)));
 		assertThat(stringToken.getColumn(), is(equalTo(0)));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.KEYWORD)));
 		assertThat(stringToken.getText(), is(equalTo("address")));
-		assertThat(lexer.nextToken(), is(nullValue()));
+		assertThat(lexer.nextRealToken(), is(nullValue()));
 		assertThat(lexer.getRexxErrors().getErrors(), is(empty()));
 	}
-
 }

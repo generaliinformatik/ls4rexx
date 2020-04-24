@@ -33,7 +33,8 @@ import de.holzem.lsp.lsp4rexx.rexxscanner.testutils.RexxLexerBuilder;
 /**
  * RexxKeywordTest
  */
-public class RexxFunctionTest {
+public class RexxFunctionTest
+{
 	@Test
 	public void testFunction() throws IOException
 	{
@@ -42,14 +43,13 @@ public class RexxFunctionTest {
 				.addln("identifier")//
 				.build();
 		RexxToken stringToken;
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.FUNCTION)));
 		assertThat(stringToken.getText(), is(equalTo("subword")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.IDENTIFIER)));
 		assertThat(stringToken.getText(), is(equalTo("identifier")));
-		assertThat(lexer.nextToken(), is(nullValue()));
+		assertThat(lexer.nextRealToken(), is(nullValue()));
 		assertThat(lexer.getRexxErrors().getErrors(), is(empty()));
 	}
-
 }

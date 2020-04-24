@@ -19,6 +19,8 @@ package de.holzem.lsp.lsp4rexx.rexxscanner;
  * TokenType
  */
 public enum TokenType {
+	REXX_COMMENT,
+	WHITESPACE,
 	COMMA,
 	COLON,
 	SEMICOLON,
@@ -47,8 +49,10 @@ public enum TokenType {
 	OR,
 	NOT,
 	CONCAT,
-	STRING,
-	STRING_UNCLOSED,
+	SQUOTE_STRING,
+	SQUOTE_STRING_UNCLOSED,
+	DQUOTE_STRING,
+	DQUOTE_STRING_UNCLOSED,
 	NUMBER,
 	IDENTIFIER,
 	KEYWORD,

@@ -33,7 +33,8 @@ import de.holzem.lsp.lsp4rexx.rexxscanner.testutils.RexxLexerBuilder;
 /**
  * RexxIdentifierTest
  */
-public class RexxIdentifierTest {
+public class RexxIdentifierTest
+{
 	@Test
 	public void testIdentifier() throws IOException
 	{
@@ -45,22 +46,22 @@ public class RexxIdentifierTest {
 				.addln("§atsign")//
 				.build();
 		RexxToken stringToken;
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.IDENTIFIER)));
 		assertThat(stringToken.getText(), is(equalTo("myVar")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.IDENTIFIER)));
 		assertThat(stringToken.getText(), is(equalTo("_my_variable_5")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.IDENTIFIER)));
 		assertThat(stringToken.getText(), is(equalTo("$global$")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.IDENTIFIER)));
 		assertThat(stringToken.getText(), is(equalTo("#misc")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.IDENTIFIER)));
 		assertThat(stringToken.getText(), is(equalTo("§atsign")));
-		assertThat(lexer.nextToken(), is(nullValue()));
+		assertThat(lexer.nextRealToken(), is(nullValue()));
 		assertThat(lexer.getRexxErrors().getErrors(), is(empty()));
 	}
 
@@ -74,20 +75,19 @@ public class RexxIdentifierTest {
 				.addln("stem.")//
 				.build();
 		RexxToken stringToken;
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.IDENTIFIER)));
 		assertThat(stringToken.getText(), is(equalTo("stem.1.firstname")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.IDENTIFIER)));
 		assertThat(stringToken.getText(), is(equalTo("stem.1.lastname")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.IDENTIFIER)));
 		assertThat(stringToken.getText(), is(equalTo("stem.0")));
-		stringToken = lexer.nextToken();
+		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(TokenType.IDENTIFIER)));
 		assertThat(stringToken.getText(), is(equalTo("stem.")));
-		assertThat(lexer.nextToken(), is(nullValue()));
+		assertThat(lexer.nextRealToken(), is(nullValue()));
 		assertThat(lexer.getRexxErrors().getErrors(), is(empty()));
 	}
-
 }
