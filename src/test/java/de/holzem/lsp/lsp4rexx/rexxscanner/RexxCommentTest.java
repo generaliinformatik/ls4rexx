@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.holzem.lsp.lsp4rexx.rexxscanner.strings;
+package de.holzem.lsp.lsp4rexx.rexxscanner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -25,18 +25,15 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-import de.holzem.lsp.lsp4rexx.rexxscanner.RexxLexer;
-import de.holzem.lsp.lsp4rexx.rexxscanner.RexxToken;
-import de.holzem.lsp.lsp4rexx.rexxscanner.TokenType;
 import de.holzem.lsp.lsp4rexx.rexxscanner.testutils.RexxLexerBuilder;
 
 /**
  * RexxCommentTest
  */
-public class RexxCommentTest
+class RexxCommentTest
 {
 	@Test
-	public void testCommentSingleLine() throws IOException
+	void testCommentSingleLine() throws IOException
 	{
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.addln("/* comment */").build();
@@ -60,7 +57,7 @@ public class RexxCommentTest
 	}
 
 	@Test
-	public void testNestedCommentSingleLine() throws IOException
+	void testNestedCommentSingleLine() throws IOException
 	{
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("/* outer comment /* inner comment */ outer comment*/").build();
@@ -73,7 +70,7 @@ public class RexxCommentTest
 	}
 
 	@Test
-	public void testCommentMultiLine() throws IOException
+	void testCommentMultiLine() throws IOException
 	{
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.addln("/* First Line") //
@@ -87,7 +84,7 @@ public class RexxCommentTest
 		assertThat(lexer.getRexxErrors().getErrors(), is(empty()));
 	}
 
-	public void testNestedCommentMultiLine() throws IOException
+	void testNestedCommentMultiLine() throws IOException
 	{
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.addln("/* First Line") //

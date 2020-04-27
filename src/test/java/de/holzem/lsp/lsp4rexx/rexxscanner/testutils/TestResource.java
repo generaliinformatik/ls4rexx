@@ -23,19 +23,19 @@ import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 /**
- * SourceFile is a helper class to convert a source file to a String.
+ * TestResource is a helper class to convert a source file to a String.
  */
-public class SourceFile
+public class TestResource
 {
 	/** For the parser it does not matter how the line break is represented */
 	private static final String LINE_BREAK = "\n";
 	private final String _filePath;
 
-	public SourceFile(final String pFileName) {
+	private TestResource(final String pFileName) {
 		_filePath = "src/test/resources/" + pFileName;
 	}
 
-	public String getFileContent() throws FileNotFoundException
+	private String getContent() throws FileNotFoundException
 	{
 		final StringBuilder contentBuilder = new StringBuilder();
 		try (Stream<String> stream = Files.lines(Paths.get(_filePath), StandardCharsets.UTF_8)) {
@@ -44,5 +44,17 @@ public class SourceFile
 			e.printStackTrace();
 		}
 		return contentBuilder.toString();
+	}
+
+	public static String getContent(final String pTestResource)
+	{
+		final TestResource testResource = new TestResource(pTestResource);
+		String content = "";
+		try {
+			content = testResource.getContent();
+		} catch (final FileNotFoundException exc) {
+			// should not happen during test
+		}
+		return content;
 	}
 }

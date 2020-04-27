@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.holzem.lsp.lsp4rexx.rexxscanner.strings;
+package de.holzem.lsp.lsp4rexx.rexxscanner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -25,19 +25,15 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-import de.holzem.lsp.lsp4rexx.rexxscanner.RexxError;
-import de.holzem.lsp.lsp4rexx.rexxscanner.RexxLexer;
-import de.holzem.lsp.lsp4rexx.rexxscanner.RexxToken;
-import de.holzem.lsp.lsp4rexx.rexxscanner.TokenType;
 import de.holzem.lsp.lsp4rexx.rexxscanner.testutils.RexxLexerBuilder;
 
 /**
  * RexxStringTest
  */
-public class RexxStringTest
+class RexxStringTest
 {
 	@Test
-	public void testSimpleDQuoteString() throws IOException
+	void testSimpleDQuoteString() throws IOException
 	{
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("\"string\"").build();
@@ -49,7 +45,7 @@ public class RexxStringTest
 	}
 
 	@Test
-	public void testTwoDQuoteStrings() throws IOException
+	void testTwoDQuoteStrings() throws IOException
 	{
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("\"string1\" \"string2\"").build();
@@ -67,7 +63,7 @@ public class RexxStringTest
 	}
 
 	@Test
-	public void testUnclosedDQuoteString() throws IOException
+	void testUnclosedDQuoteString() throws IOException
 	{
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("\"string").build();
@@ -79,7 +75,7 @@ public class RexxStringTest
 	}
 
 	@Test
-	public void testStringDQuoteDuplication() throws IOException
+	void testStringDQuoteDuplication() throws IOException
 	{
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("\"--\"\"--\"").build();
@@ -91,7 +87,7 @@ public class RexxStringTest
 	}
 
 	@Test
-	public void testSimpleSQuoteString() throws IOException
+	void testSimpleSQuoteString() throws IOException
 	{
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("'string'").build();
@@ -103,7 +99,7 @@ public class RexxStringTest
 	}
 
 	@Test
-	public void testTwoSQuoteStrings() throws IOException
+	void testTwoSQuoteStrings() throws IOException
 	{
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("'string1' 'string2'").build();
@@ -121,7 +117,7 @@ public class RexxStringTest
 	}
 
 	@Test
-	public void testUnclosedSQuoteString() throws IOException
+	void testUnclosedSQuoteString() throws IOException
 	{
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("'string").build();
@@ -133,7 +129,7 @@ public class RexxStringTest
 	}
 
 	@Test
-	public void testStringSQuoteDuplication() throws IOException
+	void testStringSQuoteDuplication() throws IOException
 	{
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("'--''--'").build();
@@ -145,7 +141,7 @@ public class RexxStringTest
 	}
 
 	@Test
-	public void testMixedQuoteStrings() throws IOException
+	void testMixedQuoteStrings() throws IOException
 	{
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add(" '\"' \"'\" ").build();

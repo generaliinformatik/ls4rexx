@@ -25,12 +25,9 @@ import de.holzem.lsp.lsp4rexx.rexxscanner.RexxLexer;
  * {@link RexxLexerBuilder#add(String)} and {@link RexxLexerBuilder#addln(String)}. The only difference between those
  * methods is, that {@link RexxLexerBuilder#addln(String)} adds <code>\r\n</code>. to the line as a convenience.
  */
-public class RexxLexerBuilder {
+public class RexxLexerBuilder
+{
 	private final StringBuilder _stringBuilder = new StringBuilder();
-
-	public RexxLexerBuilder() {
-		// nothing
-	}
 
 	public RexxLexerBuilder add(final String pLine)
 	{
@@ -50,5 +47,4 @@ public class RexxLexerBuilder {
 		final RexxLexer lexer = new RexxLexer(reader);
 		return lexer;
 	}
-
 }

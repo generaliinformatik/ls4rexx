@@ -13,34 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.holzem.lsp.lsp4rexx.rexxscanner.files;
+package de.holzem.lsp.lsp4rexx.rexxparser;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
-import java.io.FileNotFoundException;
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 
-import de.holzem.lsp.lsp4rexx.rexxscanner.RexxSourceFileInfo;
-import de.holzem.lsp.lsp4rexx.rexxscanner.testutils.SourceFile;
+import de.holzem.lsp.lsp4rexx.rexxparser.RexxFile;
+import de.holzem.lsp.lsp4rexx.rexxparser.RexxParser;
+import de.holzem.lsp.lsp4rexx.rexxscanner.testutils.TestResource;
 
 /**
- * RexxSourceFileSimple tests <code>simple.rex</code>.
+ * RexxParserTest
  */
-public class RexxSourceFileSimple
+class RexxParserTest
 {
 	@Test
-	public void testSimple() throws FileNotFoundException
+	void testSimple()
 	{
-		final SourceFile sourceFile = new SourceFile("simple.rex");
-		final RexxSourceFileInfo rexxSourceInfo = new RexxSourceFileInfo();
-		rexxSourceInfo.parse(sourceFile.getFileContent());
-		final List<String> variables = rexxSourceInfo.getVariables();
-		assertThat(variables.size(), is(equalTo(2)));
-		assertThat(variables.get(0), is(equalTo("info")));
-		assertThat(variables.get(1), is(equalTo("sum")));
+		final String testResourceContent = TestResource.getContent("simple.rex");
+		final RexxFile rexxFile = RexxParser.INSTANCE.parse("simple.rex", testResourceContent);
+		assertThat(rexxFile.getText(), is(equalTo(testResourceContent)));
+		assertThat(rexxFile.getVariables(), contains("info", "infoSum"));
+		assertThat(rexxFile.getVariables().size(), is(equalTo(2)));
 	}
 }

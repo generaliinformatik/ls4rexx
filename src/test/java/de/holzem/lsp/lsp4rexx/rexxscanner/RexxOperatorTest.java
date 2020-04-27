@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.holzem.lsp.lsp4rexx.rexxscanner.strings;
+package de.holzem.lsp.lsp4rexx.rexxscanner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -25,18 +25,15 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-import de.holzem.lsp.lsp4rexx.rexxscanner.RexxLexer;
-import de.holzem.lsp.lsp4rexx.rexxscanner.RexxToken;
-import de.holzem.lsp.lsp4rexx.rexxscanner.TokenType;
 import de.holzem.lsp.lsp4rexx.rexxscanner.testutils.RexxLexerBuilder;
 
 /**
  * RexxOperatorTest
  */
-public class RexxOperatorTest
+class RexxOperatorTest
 {
 	@Test
-	public void testMiscOperators() throws IOException
+	void testMiscOperators() throws IOException
 	{
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add(",:;().!!").build();
@@ -67,7 +64,7 @@ public class RexxOperatorTest
 	}
 
 	@Test
-	public void testMathOperators() throws IOException
+	void testMathOperators() throws IOException
 	{
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("+-*///%").build();
@@ -95,7 +92,7 @@ public class RexxOperatorTest
 	}
 
 	@Test
-	public void testCompareOperators() throws IOException
+	void testCompareOperators() throws IOException
 	{
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("= ^= <> >< < <= > >=").build();
@@ -129,7 +126,7 @@ public class RexxOperatorTest
 	}
 
 	@Test
-	public void testStrictCompareOperators() throws IOException
+	void testStrictCompareOperators() throws IOException
 	{
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("== ^== << <<= >> >>=").build();
@@ -157,7 +154,7 @@ public class RexxOperatorTest
 	}
 
 	@Test
-	public void testLogicalOperators() throws IOException
+	void testLogicalOperators() throws IOException
 	{
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.add("& ! ^").build();

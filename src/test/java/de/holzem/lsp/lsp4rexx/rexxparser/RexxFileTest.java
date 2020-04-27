@@ -16,84 +16,85 @@
 package de.holzem.lsp.lsp4rexx.rexxparser;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
-import org.junit.jupiter.api.BeforeEach;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
+import de.holzem.lsp.lsp4rexx.rexxparser.RexxFile;
+import de.holzem.lsp.lsp4rexx.rexxparser.RexxFile.RexxFileBuilder;
 import de.holzem.lsp.lsp4rexx.rexxscanner.RexxToken;
 import de.holzem.lsp.lsp4rexx.rexxscanner.TokenType;
+import de.holzem.lsp.lsp4rexx.rexxscanner.testutils.RexxTokenBuilder;
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 /**
  * RexxFileTest
  */
 class RexxFileTest
 {
-	private int _line;
-	private int _column;
-	private long _charBegin;
-
-	@BeforeEach
-	void initCounters()
+	@Test
+	void testBuilder()
 	{
-		_line = 0;
-		_column = 0;
-		_charBegin = 0;
+		final RexxFile.RexxFileBuilder rexxFileBuilder = RexxFile.builder()//
+				.uri("test.rex")//
+				.labels(null) //
+				.variables(null);
+		assertThat(rexxFileBuilder.toString(), containsString("test.rex"));
 	}
 
 	@Test
 	void testUri()
 	{
-		final RexxFile file = new RexxFile("test.rex");
+		final RexxFile file = RexxFile.builder()//
+				.uri("test.rex")//
+				.labels(null) //
+				.variables(null) //
+				.build();
 		assertThat(file.getUri(), is(equalTo("test.rex")));
+		assertThat(file.getLabels(), is(nullValue()));
+		assertThat(file.getVariables(), is(nullValue()));
+		assertThat(file.getTokens(), is(nullValue()));
+		assertThat(file.toString(), containsString("test.rex"));
 	}
 
 	@Test
 	void testSingleComment()
 	{
-		final RexxFile file = new RexxFile("test.rex");
-		file.add(createComment("/* REXX */"));
+		final List<RexxToken> tokens = new RexxTokenBuilder() //
+				.createComment("/* REXX */") //
+				.build();
+		final RexxFile file = new RexxFile.RexxFileBuilder() //
+				.uri("test.rex") //
+				.tokens(tokens) //
+				.build();
 		assertThat(file.getText(), is(equalTo("/* REXX */")));
 	}
 
 	@Test
 	void testSmallRexx()
 	{
-		final RexxFile file = new RexxFile("test.rex");
-		file.add(createComment("/* REXX */"));
-		file.add(createWhiteSpace("\r\n"));
-		file.add(createToken(TokenType.FUNCTION, "exit"));
-		file.add(createWhiteSpace(" "));
-		file.add(createToken(TokenType.NUMBER, "0"));
+		final List<RexxToken> tokens = new RexxTokenBuilder() //
+				.createComment("/* REXX */") //
+				.createWhiteSpace("\r\n") //
+				.createToken(TokenType.FUNCTION, "exit") //
+				.createWhiteSpace(" ") //
+				.createToken(TokenType.NUMBER, "0") //
+				.build();
+		final RexxFile file = new RexxFile.RexxFileBuilder() //
+				.uri("test.rex") //
+				.tokens(tokens) //
+				.build();
 		assertThat(file.getText(), is(equalTo("/* REXX */\r\nexit 0")));
 	}
 
-	private RexxToken createToken(final TokenType pTokenType, final String pText)
+	@Test
+	void testEquals()
 	{
-		final RexxToken token = new RexxToken(pTokenType, pText, _line, _column, _charBegin);
-		_charBegin = token.getCharEnd();
-		_column += (token.getCharEnd() - token.getCharBegin());
-		return token;
-	}
-
-	private RexxToken createWhiteSpace(final String pText)
-	{
-		final RexxToken token = new RexxToken(TokenType.WHITESPACE, pText, _line, _column, _charBegin);
-		_charBegin = token.getCharEnd();
-		_column += (token.getCharEnd() - token.getCharBegin());
-		final long newlines = pText.chars().filter(num -> num == '\n').count();
-		_line += newlines;
-		return token;
-	}
-
-	private RexxToken createComment(final String pText)
-	{
-		final RexxToken token = new RexxToken(TokenType.REXX_COMMENT, pText, _line, _column, _charBegin);
-		_charBegin = token.getCharEnd();
-		_column += (token.getCharEnd() - token.getCharBegin());
-		final long newlines = pText.chars().filter(num -> num == '\n').count();
-		_line += newlines;
-		return token;
+		EqualsVerifier.forClass(RexxFile.class).verify();
 	}
 }

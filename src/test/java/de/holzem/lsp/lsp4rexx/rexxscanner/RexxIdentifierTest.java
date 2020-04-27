@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.holzem.lsp.lsp4rexx.rexxscanner.strings;
+package de.holzem.lsp.lsp4rexx.rexxscanner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -25,18 +25,15 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-import de.holzem.lsp.lsp4rexx.rexxscanner.RexxLexer;
-import de.holzem.lsp.lsp4rexx.rexxscanner.RexxToken;
-import de.holzem.lsp.lsp4rexx.rexxscanner.TokenType;
 import de.holzem.lsp.lsp4rexx.rexxscanner.testutils.RexxLexerBuilder;
 
 /**
  * RexxIdentifierTest
  */
-public class RexxIdentifierTest
+class RexxIdentifierTest
 {
 	@Test
-	public void testIdentifier() throws IOException
+	void testIdentifier() throws IOException
 	{
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.addln("myVar")//
@@ -66,7 +63,7 @@ public class RexxIdentifierTest
 	}
 
 	@Test
-	public void testStemVar() throws IOException
+	void testStemVar() throws IOException
 	{
 		final RexxLexer lexer = new RexxLexerBuilder() //
 				.addln("stem.1.firstname")//

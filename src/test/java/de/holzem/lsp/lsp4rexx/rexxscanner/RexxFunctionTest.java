@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.holzem.lsp.lsp4rexx.rexxscanner.strings;
+package de.holzem.lsp.lsp4rexx.rexxscanner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -25,38 +25,27 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-import de.holzem.lsp.lsp4rexx.rexxscanner.RexxLexer;
-import de.holzem.lsp.lsp4rexx.rexxscanner.RexxToken;
-import de.holzem.lsp.lsp4rexx.rexxscanner.TokenType;
 import de.holzem.lsp.lsp4rexx.rexxscanner.testutils.RexxLexerBuilder;
 
 /**
  * RexxKeywordTest
  */
-public class RexxKeywordTest
+class RexxFunctionTest
 {
 	@Test
-	public void testKeywordCaseIgnore() throws IOException
+	void testFunction() throws IOException
 	{
 		final RexxLexer lexer = new RexxLexerBuilder() //
-				.addln("address")//
-				.addln("ADDRESS")//
-				.addln("aDDress")//
+				.addln("subword")//
+				.addln("identifier")//
 				.build();
 		RexxToken stringToken;
 		stringToken = lexer.nextRealToken();
-		assertThat(stringToken.getType(), is(equalTo(TokenType.KEYWORD)));
-		assertThat(stringToken.getText(), is(equalTo("address")));
+		assertThat(stringToken.getType(), is(equalTo(TokenType.FUNCTION)));
+		assertThat(stringToken.getText(), is(equalTo("subword")));
 		stringToken = lexer.nextRealToken();
-		assertThat(stringToken.getType(), is(equalTo(TokenType.KEYWORD)));
-		assertThat(stringToken.getText(), is(equalTo("address")));
-		assertThat(stringToken.getCharBegin(), is(equalTo(9L)));
-		assertThat(stringToken.getCharEnd(), is(equalTo(16L)));
-		assertThat(stringToken.getLine(), is(equalTo(1)));
-		assertThat(stringToken.getColumn(), is(equalTo(0)));
-		stringToken = lexer.nextRealToken();
-		assertThat(stringToken.getType(), is(equalTo(TokenType.KEYWORD)));
-		assertThat(stringToken.getText(), is(equalTo("address")));
+		assertThat(stringToken.getType(), is(equalTo(TokenType.IDENTIFIER)));
+		assertThat(stringToken.getText(), is(equalTo("identifier")));
 		assertThat(lexer.nextRealToken(), is(nullValue()));
 		assertThat(lexer.getRexxErrors().getErrors(), is(empty()));
 	}

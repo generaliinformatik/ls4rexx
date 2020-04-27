@@ -15,37 +15,28 @@
  */
 package de.holzem.lsp.lsp4rexx.rexxparser;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import de.holzem.lsp.lsp4rexx.rexxscanner.RexxToken;
+import lombok.Builder;
+import lombok.Value;
 
 /**
- * RexxFile
+ * RexxFile accumulates all information gained from the RexxParser.
  */
-public class RexxFile
+@Value
+@Builder
+public final class RexxFile
 {
-	private final String _uri;
-	private final List<RexxToken> _tokens = new ArrayList<RexxToken>();
-
-	public RexxFile(final String pUri) {
-		_uri = pUri;
-	}
-
-	public String getUri()
-	{
-		return _uri;
-	}
-
-	public void add(final RexxToken pRexxToken)
-	{
-		_tokens.add(pRexxToken);
-	}
+	private final String uri;
+	private final List<RexxToken> tokens;
+	private final List<String> variables;
+	private final List<String> labels;
 
 	public String getText()
 	{
-		final String fileText = _tokens.stream().map(token -> token.getText()).collect(Collectors.joining());
+		final String fileText = tokens.stream().map(token -> token.getText()).collect(Collectors.joining());
 		return fileText;
 	}
 }
