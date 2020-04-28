@@ -25,8 +25,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import de.holzem.lsp.lsp4rexx.rexxparser.RexxFile;
-import de.holzem.lsp.lsp4rexx.rexxparser.RexxFile.RexxFileBuilder;
 import de.holzem.lsp.lsp4rexx.rexxscanner.RexxToken;
 import de.holzem.lsp.lsp4rexx.rexxscanner.TokenType;
 import de.holzem.lsp.lsp4rexx.rexxscanner.testutils.RexxTokenBuilder;
