@@ -24,46 +24,84 @@ import java.util.List;
 import de.holzem.lsp.lsp4rexx.rexxscanner.RexxLexer;
 import de.holzem.lsp.lsp4rexx.rexxscanner.RexxToken;
 import de.holzem.lsp.lsp4rexx.rexxscanner.TokenType;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * RexxParser parses a REXX file
  */
+@Slf4j
 public enum RexxParser
 {
 	INSTANCE;
 
 	public RexxFile parse(final String pUri, final String pText)
 	{
+		log.info("parse {}", pUri);
 		final RexxHandler handler = new RexxHandler();
 		final Reader reader = new StringReader(pText);
 		final RexxLexer lexer = new RexxLexer(reader);
 		final List<RexxToken> tokens = new ArrayList<RexxToken>();
-		try {
-			for (RexxToken rexxToken = lexer.nextToken(); rexxToken != null; rexxToken = lexer.nextToken()) {
-				tokens.add(rexxToken);
-				final TokenType tokenType = rexxToken.getType();
-				switch (tokenType) {
-				case FUNCTION:
-					handler.handleFunction(rexxToken);
-					break;
-				case IDENTIFIER:
-					handler.handleIdentifier(rexxToken);
-					break;
-				case COLON:
-					handler.handleColon(rexxToken);
-					break;
-				case LEFT_PARENTHESIS:
-					handler.handleLeftParenthesis(rexxToken);
-					break;
-				default:
-					break;
-				}
+		// correct interpretation usually needs three tokens
+		// Initialize triple
+		RexxToken prev = null;
+		RexxToken current = getNextNonSkipToken(lexer, tokens);
+		RexxToken next = getNextNonSkipToken(lexer, tokens);
+		//
+		while (current != null) {
+			final TokenType tokenType = current.getType();
+			switch (tokenType) {
+			case KEYWORD:
+				handler.handleKeyword(prev, current, next);
+				break;
+			case IDENTIFIER:
+				handler.handleIdentifier(prev, current, next);
+				break;
+			case COLON:
+				handler.handleColon(prev, current, next);
+				break;
+			default:
+				break;
 			}
-		} catch (final IOException exc) {
-			// should never happen on a string
+			// Next Token
+			prev = current;
+			current = next;
+			next = getNextNonSkipToken(lexer, tokens);
 		}
 		final RexxFile rexxFile = new RexxFile.RexxFileBuilder().uri(pUri).tokens(tokens)
 				.variables(handler.getVariables()).labels(handler.getLabels()).build();
+		log.info("parsing done {}: {} variables, {} labels", pUri, handler.getVariables().size(),
+				handler.getLabels().size());
 		return rexxFile;
+	}
+
+	private RexxToken getNextNonSkipToken(final RexxLexer pLexer, final List<RexxToken> pCompleteTokenList)
+	{
+		RexxToken token = null;
+		boolean tokenFound = false;
+		while ((!tokenFound) && ((token = getNextToken(pLexer)) != null)) {
+			final TokenType tokenType = token.getType();
+			switch (tokenType) {
+			case WHITESPACE:
+			case REXX_COMMENT:
+				pCompleteTokenList.add(token);
+				break;
+			default:
+				pCompleteTokenList.add(token);
+				tokenFound = true;
+				break;
+			}
+		}
+		return token;
+	}
+
+	private RexxToken getNextToken(final RexxLexer pLexer)
+	{
+		RexxToken token = null;
+		try {
+			token = pLexer.nextToken();
+		} catch (final IOException exc) {
+			log.error("error while reading next token", exc);
+		}
+		return token;
 	}
 }

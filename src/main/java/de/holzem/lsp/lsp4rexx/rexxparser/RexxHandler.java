@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 
 import de.holzem.lsp.lsp4rexx.rexxscanner.RexxToken;
+import de.holzem.lsp.lsp4rexx.rexxscanner.TokenType;
 
 /**
  * RexxHandler
@@ -28,32 +29,35 @@ import de.holzem.lsp.lsp4rexx.rexxscanner.RexxToken;
 class RexxHandler
 {
 	Set<String> _registeredVariables = new HashSet<String>();
+	Set<String> _registeredLabels = new HashSet<String>();
 	List<String> _variables = new ArrayList<String>();
 	List<String> _labels = new ArrayList<String>();
 
-	void handleFunction(final RexxToken pRexxToken)
+	void handleKeyword(final RexxToken pPrevToken, final RexxToken pCurrentToken, final RexxToken pNextToken)
 	{
-		// TODO Auto-generated method stub
 	}
 
-	void handleIdentifier(final RexxToken pRexxToken)
+	void handleIdentifier(final RexxToken pPrevToken, final RexxToken pCurrentToken, final RexxToken pNextToken)
 	{
-		final String tokenText = pRexxToken.getText();
-		final String tokenTextLowerCase = tokenText.toLowerCase();
-		if (!_registeredVariables.contains(tokenTextLowerCase)) {
-			_variables.add(tokenText);
-			_registeredVariables.add(tokenTextLowerCase);
+		final TokenType nextTokenType = pNextToken.getType();
+		if (nextTokenType == TokenType.EQ) {
+			final String tokenText = pCurrentToken.getText();
+			final String tokenTextLowerCase = tokenText.toLowerCase();
+			if (!_registeredVariables.contains(tokenTextLowerCase)) {
+				_variables.add(tokenText);
+				_registeredVariables.add(tokenTextLowerCase);
+			}
 		}
 	}
 
-	void handleLeftParenthesis(final RexxToken pRexxToken)
+	void handleColon(final RexxToken pPrevToken, final RexxToken pCurrentToken, final RexxToken pNextToken)
 	{
-		// TODO Auto-generated method stub
-	}
-
-	void handleColon(final RexxToken pRexxToken)
-	{
-		// TODO Auto-generated method stub
+		final String labelText = pPrevToken.getText();
+		final String labelTextUpperCase = labelText.toUpperCase();
+		if (!_registeredLabels.contains(labelTextUpperCase)) {
+			_labels.add(labelText);
+			_registeredLabels.add(labelTextUpperCase);
+		}
 	}
 
 	List<String> getVariables()

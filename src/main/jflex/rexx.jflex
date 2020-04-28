@@ -50,7 +50,6 @@ import static de.holzem.lsp.lsp4rexx.rexxscanner.RexxError.*;
 
   private void addError(RexxError pRexxError) {
     _rexxErrors.addError(pRexxError);
-    System.err.println("Error: "+pRexxError.getMessage());
   }
 
   public RexxErrors getRexxErrors() {
@@ -71,7 +70,11 @@ import static de.holzem.lsp.lsp4rexx.rexxscanner.RexxError.*;
 %type RexxToken
 %function nextToken
 
+/*
+** for debugging purposes
 %debug
+**
+*/
 
 ALPHA=[A-Za-z#$§_]
 DIGIT=[0-9]

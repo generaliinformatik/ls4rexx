@@ -22,8 +22,6 @@ import static org.hamcrest.Matchers.is;
 
 import org.junit.jupiter.api.Test;
 
-import de.holzem.lsp.lsp4rexx.rexxparser.RexxFile;
-import de.holzem.lsp.lsp4rexx.rexxparser.RexxParser;
 import de.holzem.lsp.lsp4rexx.rexxscanner.testutils.TestResource;
 
 /**
@@ -34,10 +32,20 @@ class RexxParserTest
 	@Test
 	void testSimple()
 	{
-		final String testResourceContent = TestResource.getContent("simple.rex");
-		final RexxFile rexxFile = RexxParser.INSTANCE.parse("simple.rex", testResourceContent);
+		final String uri = "rexx/simple.rex";
+		final String testResourceContent = TestResource.getContent(uri);
+		final RexxFile rexxFile = RexxParser.INSTANCE.parse(uri, testResourceContent);
 		assertThat(rexxFile.getText(), is(equalTo(testResourceContent)));
 		assertThat(rexxFile.getVariables(), contains("info", "infoSum"));
 		assertThat(rexxFile.getVariables().size(), is(equalTo(2)));
+	}
+
+	@Test
+	void testCall()
+	{
+		final String uri = "rexx/call.rex";
+		final String testResourceContent = TestResource.getContent(uri);
+		final RexxFile rexxFile = RexxParser.INSTANCE.parse(uri, testResourceContent);
+		assertThat(rexxFile.getLabels(), contains("TESTPROC"));
 	}
 }
