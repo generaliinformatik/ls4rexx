@@ -13,50 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.holzem.lsp.lsp4rexx.rexxscanner;
+package de.holzem.lsp.lsp4rexx.services;
 
 /**
- * TokenType
+ * LanguageService
  */
-public enum TokenType {
-	SYNTHETIC,
-	REXX_COMMENT,
-	WHITESPACE,
-	COMMA,
-	COLON,
-	SEMICOLON,
-	LEFT_PARENTHESIS,
-	RIGHT_PARENTHESIS,
-	DOT,
-	PLUS,
-	MINUS,
-	MULTI,
-	DIVIDE,
-	DIVIDE_INTEGER,
-	DIVIDE_REMAINDER,
-	EQ,
-	NE,
-	LT,
-	LE,
-	GT,
-	GE,
-	STRICT_EQ,
-	STRICT_NE,
-	STRICT_LT,
-	STRICT_LE,
-	STRICT_GT,
-	STRICT_GE,
-	AND,
-	OR,
-	NOT,
-	CONCAT,
-	SQUOTE_STRING,
-	SQUOTE_STRING_UNCLOSED,
-	DQUOTE_STRING,
-	DQUOTE_STRING_UNCLOSED,
-	NUMBER,
-	IDENTIFIER,
-	KEYWORD,
-	FUNCTION
+public class LanguageService
+{
+	protected final LanguageServices _languageServices;
 
+	public LanguageService(final LanguageServices pLanguageServices) {
+		_languageServices = pLanguageServices;
+	}
+
+	public LanguageServices getLanguageService()
+	{
+		return _languageServices;
+	}
 }

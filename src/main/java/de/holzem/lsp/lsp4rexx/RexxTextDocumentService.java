@@ -15,7 +15,6 @@
  */
 package de.holzem.lsp.lsp4rexx;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
@@ -26,7 +25,6 @@ import org.eclipse.lsp4j.CodeLens;
 import org.eclipse.lsp4j.CodeLensParams;
 import org.eclipse.lsp4j.Command;
 import org.eclipse.lsp4j.CompletionItem;
-import org.eclipse.lsp4j.CompletionItemKind;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.CompletionParams;
 import org.eclipse.lsp4j.DidChangeTextDocumentParams;
@@ -40,6 +38,7 @@ import org.eclipse.lsp4j.DocumentRangeFormattingParams;
 import org.eclipse.lsp4j.DocumentSymbolParams;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Location;
+import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.ReferenceParams;
 import org.eclipse.lsp4j.RenameParams;
 import org.eclipse.lsp4j.SignatureHelp;
@@ -57,6 +56,7 @@ import de.holzem.lsp.lsp4rexx.files.RexxDocument;
 import de.holzem.lsp.lsp4rexx.files.RexxDocuments;
 import de.holzem.lsp.lsp4rexx.rexxparser.RexxFile;
 import de.holzem.lsp.lsp4rexx.rexxparser.RexxParser;
+import de.holzem.lsp.lsp4rexx.services.LanguageServices;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -83,24 +83,11 @@ public class RexxTextDocumentService implements TextDocumentService
 			final CompletionParams completionParams)
 	{
 		final TextDocumentIdentifier textDocumentIdentifier = completionParams.getTextDocument();
-		return computeRexxFileAsync(textDocumentIdentifier, this::computeCompletions);
-	}
-
-	private Either<List<CompletionItem>, CompletionList> computeCompletions(final CancelChecker pCancelChecker,
-			final RexxFile pRexxFile)
-	{
-		final List<CompletionItem> completionItems = new ArrayList<>();
-		for (final String variable : pRexxFile.getVariables()) {
-			final CompletionItem completionItem = new CompletionItem(variable);
-			completionItem.setKind(CompletionItemKind.Variable);
-			completionItem.setInsertText(variable);
-			completionItem.setDetail("Variable " + variable);
-			completionItems.add(completionItem);
-		}
-		final CompletionList completionList = new CompletionList();
-		completionList.setIsIncomplete(true);
-		completionList.setItems(completionItems);
-		return Either.forRight(completionList);
+		final Position position = completionParams.getPosition();
+		return computeRexxFileAsync(textDocumentIdentifier, (cancelChecker, rexxFile) -> {
+			final CompletionList list = getLanguageServices().doComplete(rexxFile, position, cancelChecker);
+			return Either.forRight(list);
+		});
 	}
 
 	@Override
@@ -233,9 +220,14 @@ public class RexxTextDocumentService implements TextDocumentService
 		// TODO publish diagnostics
 	}
 
-	public RexxDocument getDocument(final String pUri)
+	private RexxDocument getDocument(final String pUri)
 	{
 		return _rexxDocuments.getDocument(pUri);
+	}
+
+	private LanguageServices getLanguageServices()
+	{
+		return _rexxLanguageServer.getLanguageServices();
 	}
 
 	private <R> CompletableFuture<R> computeRexxFileAsync(final TextDocumentIdentifier pDocumentIdentifier,
@@ -252,7 +244,6 @@ public class RexxTextDocumentService implements TextDocumentService
 		final CompletableFuture<R> result = start.thenCombineAsync(pRexxFile, pBiFunction);
 		final CancelChecker cancelIndicator = () -> {
 			if (result.isCancelled()) {
-				log.info("computing of model is cancelled");
 				throw new CancellationException();
 			}
 		};

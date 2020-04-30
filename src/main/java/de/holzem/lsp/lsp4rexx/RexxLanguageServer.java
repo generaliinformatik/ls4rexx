@@ -15,6 +15,7 @@
  */
 package de.holzem.lsp.lsp4rexx;
 
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.lsp4j.CompletionOptions;
@@ -28,17 +29,28 @@ import org.eclipse.lsp4j.services.LanguageServer;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import org.eclipse.lsp4j.services.WorkspaceService;
 
+import de.holzem.lsp.lsp4rexx.services.LanguageServices;
+
 public class RexxLanguageServer implements LanguageServer, LanguageClientAware
 {
-	private final TextDocumentService textDocumentService;
-	private final WorkspaceService workspaceService;
-	private LanguageClient languageClient;
+	private final TextDocumentService _textDocumentService;
+	private final WorkspaceService _workspaceService;
+	private final LanguageServices _languageServices;
+	private LanguageClient _languageClient;
 	private int errorCode = 1;
 
 	public RexxLanguageServer() {
-		this.textDocumentService = new RexxTextDocumentService(this);
-		this.workspaceService = new RexxWorkspaceService();
+		_workspaceService = new RexxWorkspaceService();
+		_languageServices = new LanguageServices();
+		_textDocumentService = new RexxTextDocumentService(this);
 	}
+
+	private static final String[] COMPLETION_TRIGGER_CHARACTERS = { "_", "$", //
+			"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "o", "p", "q", "r", "s", "t", "u", "v",
+			"w", "x", "y", "z", //
+			"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "O", "P", "Q", "R", "S", "T", "U", "V",
+			"W", "X", "Y", "Z", //
+	};
 
 	@Override
 	public CompletableFuture<InitializeResult> initialize(final InitializeParams initializeParams)
@@ -48,6 +60,7 @@ public class RexxLanguageServer implements LanguageServer, LanguageClientAware
 		// Set the capabilities of the LS to inform the client.
 		initializeResult.getCapabilities().setTextDocumentSync(TextDocumentSyncKind.Full);
 		final CompletionOptions completionOptions = new CompletionOptions();
+		completionOptions.setTriggerCharacters(Arrays.asList(COMPLETION_TRIGGER_CHARACTERS));
 		initializeResult.getCapabilities().setCompletionProvider(completionOptions);
 		return CompletableFuture.supplyAsync(() -> initializeResult);
 	}
@@ -71,20 +84,30 @@ public class RexxLanguageServer implements LanguageServer, LanguageClientAware
 	public TextDocumentService getTextDocumentService()
 	{
 		// Return the endpoint for language features.
-		return this.textDocumentService;
+		return _textDocumentService;
 	}
 
 	@Override
 	public WorkspaceService getWorkspaceService()
 	{
 		// Return the endpoint for workspace functionality.
-		return this.workspaceService;
+		return _workspaceService;
 	}
 
 	@Override
 	public void connect(final LanguageClient languageClient)
 	{
 		// Get the client which started this LS.
-		this.languageClient = languageClient;
+		_languageClient = languageClient;
+	}
+
+	public LanguageServices getLanguageServices()
+	{
+		return _languageServices;
+	}
+
+	public LanguageClient getLanguageClient()
+	{
+		return _languageClient;
 	}
 }

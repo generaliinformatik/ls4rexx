@@ -39,8 +39,13 @@ class RexxHandler
 
 	void handleIdentifier(final RexxToken pPrevToken, final RexxToken pCurrentToken, final RexxToken pNextToken)
 	{
-		final TokenType nextTokenType = pNextToken.getType();
-		if (nextTokenType == TokenType.EQ) {
+		final TokenType prevTokenType = (pPrevToken != null ? pPrevToken.getType() : null);
+		final TokenType nextTokenType = (pNextToken != null ? pNextToken.getType() : null);
+		final boolean isNextColon = (nextTokenType == TokenType.COLON);
+		final boolean isNextLeftParen = (nextTokenType == TokenType.LEFT_PARENTHESIS);
+		final boolean isPrevCall = (prevTokenType == TokenType.KEYWORD
+				&& pPrevToken.getText().toLowerCase().contentEquals("call"));
+		if (!isNextColon && !isPrevCall && !isNextLeftParen) {
 			final String tokenText = pCurrentToken.getText();
 			final String tokenTextLowerCase = tokenText.toLowerCase();
 			if (!_registeredVariables.contains(tokenTextLowerCase)) {
@@ -62,11 +67,13 @@ class RexxHandler
 
 	List<String> getVariables()
 	{
+		_variables.sort((s1, s2) -> s1.compareToIgnoreCase(s2));
 		return _variables;
 	}
 
 	List<String> getLabels()
 	{
+		_labels.sort((s1, s2) -> s1.compareToIgnoreCase(s2));
 		return _labels;
 	}
 }

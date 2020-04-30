@@ -115,7 +115,7 @@ IDENT = {ALPHA}(\.|{ALPHA}|{DIGIT})*
   "NUMERIC"   { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar)); }
   "OPTIONS"   { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar)); }
   "PARSE"     { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar)); }
-  "PROCEDUR"  { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar)); }
+  "PROCEDURE" { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar)); }
   "EXPOSE"    { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar)); }
   "PULL"      { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar)); }
   "PUSH"      { return (new RexxToken(KEYWORD,yytext(),yyline,yycolumn,yychar)); }

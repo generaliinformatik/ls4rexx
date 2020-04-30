@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import de.holzem.lsp.lsp4rexx.rexxscanner.RexxToken;
 import de.holzem.lsp.lsp4rexx.rexxscanner.TokenType;
 import de.holzem.lsp.lsp4rexx.rexxscanner.testutils.RexxTokenBuilder;
+import de.holzem.lsp.lsp4rexx.rexxscanner.testutils.TestResource;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 /**
@@ -94,5 +95,37 @@ class RexxFileTest
 	void testEquals()
 	{
 		EqualsVerifier.forClass(RexxFile.class).verify();
+	}
+
+	@Test
+	void testLocate()
+	{
+		final String uri = "rexx/simple.rex";
+		final String testResourceContent = TestResource.getContent(uri);
+		final RexxFile rexxFile = RexxParser.INSTANCE.parse(uri, testResourceContent);
+		/* First token on line 1 */
+		final int pos_0_0 = rexxFile.locateToken(0, 0);
+		assertThat(rexxFile.getTokens().get(pos_0_0).getText(), is(equalTo("/* REXX */")));
+		/* First token on line 3 */
+		final int pos_2_0 = rexxFile.locateToken(2, 0);
+		assertThat(rexxFile.getTokens().get(pos_2_0).getText(), is(equalTo("/* Initialize */")));
+		/* First token on line 15 */
+		final int pos_14_0 = rexxFile.locateToken(14, 0);
+		assertThat(rexxFile.getTokens().get(pos_14_0).getText(), is(equalTo("exit")));
+		/* First token on line 15 */
+		final int pos_14_6 = rexxFile.locateToken(14, 6);
+		assertThat(rexxFile.getTokens().get(pos_14_6).getType(), is(equalTo(TokenType.WHITESPACE)));
+		/* Past last token on line 16 */
+		final int pos_15_0 = rexxFile.locateToken(15, 0);
+		assertThat(rexxFile.getTokens().get(pos_15_0).getType(), is(equalTo(TokenType.WHITESPACE)));
+		/* check boundaries and inside of infoSum */
+		final int pos_11_10 = rexxFile.locateToken(11, 10);
+		assertThat(rexxFile.getTokens().get(pos_11_10).getText(), is(equalTo("infoSum")));
+		final int pos_11_13 = rexxFile.locateToken(11, 13);
+		assertThat(rexxFile.getTokens().get(pos_11_13).getText(), is(equalTo("infoSum")));
+		final int pos_11_16 = rexxFile.locateToken(11, 16);
+		assertThat(rexxFile.getTokens().get(pos_11_16).getText(), is(equalTo("infoSum")));
+		final int pos_11_17 = rexxFile.locateToken(11, 17);
+		assertThat(rexxFile.getTokens().get(pos_11_17).getType(), is(equalTo(TokenType.WHITESPACE)));
 	}
 }
