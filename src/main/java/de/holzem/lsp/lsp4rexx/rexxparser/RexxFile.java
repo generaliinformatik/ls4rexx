@@ -18,6 +18,8 @@ package de.holzem.lsp.lsp4rexx.rexxparser;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.eclipse.lsp4j.jsonrpc.CancelChecker;
+
 import de.holzem.lsp.lsp4rexx.rexxscanner.RexxToken;
 import lombok.Builder;
 import lombok.Value;
@@ -33,6 +35,7 @@ public final class RexxFile
 	private final List<RexxToken> tokens;
 	private final List<String> variables;
 	private final List<String> labels;
+	private final CancelChecker cancelChecker;
 
 	public String getText()
 	{

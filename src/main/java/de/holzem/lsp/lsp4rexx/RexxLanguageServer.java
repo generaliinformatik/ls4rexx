@@ -28,14 +28,15 @@ import org.eclipse.lsp4j.services.LanguageServer;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import org.eclipse.lsp4j.services.WorkspaceService;
 
-public class RexxLanguageServer implements LanguageServer, LanguageClientAware {
+public class RexxLanguageServer implements LanguageServer, LanguageClientAware
+{
 	private final TextDocumentService textDocumentService;
 	private final WorkspaceService workspaceService;
 	private LanguageClient languageClient;
 	private int errorCode = 1;
 
 	public RexxLanguageServer() {
-		this.textDocumentService = new RexxTextDocumentService();
+		this.textDocumentService = new RexxTextDocumentService(this);
 		this.workspaceService = new RexxWorkspaceService();
 	}
 
@@ -44,7 +45,6 @@ public class RexxLanguageServer implements LanguageServer, LanguageClientAware {
 	{
 		// Initialize the InitializeResult for this LS.
 		final InitializeResult initializeResult = new InitializeResult(new ServerCapabilities());
-
 		// Set the capabilities of the LS to inform the client.
 		initializeResult.getCapabilities().setTextDocumentSync(TextDocumentSyncKind.Full);
 		final CompletionOptions completionOptions = new CompletionOptions();

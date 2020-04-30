@@ -17,7 +17,9 @@ package de.holzem.lsp.lsp4rexx;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiFunction;
 
 import org.eclipse.lsp4j.CodeActionParams;
 import org.eclipse.lsp4j.CodeLens;
@@ -42,32 +44,63 @@ import org.eclipse.lsp4j.ReferenceParams;
 import org.eclipse.lsp4j.RenameParams;
 import org.eclipse.lsp4j.SignatureHelp;
 import org.eclipse.lsp4j.SymbolInformation;
+import org.eclipse.lsp4j.TextDocumentIdentifier;
+import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.TextDocumentPositionParams;
 import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.WorkspaceEdit;
+import org.eclipse.lsp4j.jsonrpc.CancelChecker;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.TextDocumentService;
 
-public class RexxTextDocumentService implements TextDocumentService {
+import de.holzem.lsp.lsp4rexx.files.RexxDocument;
+import de.holzem.lsp.lsp4rexx.files.RexxDocuments;
+import de.holzem.lsp.lsp4rexx.rexxparser.RexxFile;
+import de.holzem.lsp.lsp4rexx.rexxparser.RexxParser;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+public class RexxTextDocumentService implements TextDocumentService
+{
+	private final RexxLanguageServer _rexxLanguageServer;
+	private final RexxDocuments _rexxDocuments;
+
+	/**
+	 * Constructor
+	 */
+	public RexxTextDocumentService(final RexxLanguageServer pRexxLanguageServer) {
+		_rexxLanguageServer = pRexxLanguageServer;
+		_rexxDocuments = new RexxDocuments(this::parseBiFunction);
+	}
+
+	private RexxFile parseBiFunction(final TextDocumentItem pDocumentItem, final CancelChecker pCancelChecker)
+	{
+		return RexxParser.INSTANCE.parse(pDocumentItem, pCancelChecker);
+	}
+
 	@Override
 	public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(
 			final CompletionParams completionParams)
 	{
-		// Provide completion item.
-		return CompletableFuture.supplyAsync(() -> {
-			final List<CompletionItem> completionItems = new ArrayList<>();
-			try {
-				final CompletionItem completionItem = new CompletionItem();
-				completionItem.setInsertText("say \"Hello\"\n");
-				completionItem.setLabel("say \"Hello\"");
-				completionItem.setKind(CompletionItemKind.Snippet);
-				completionItem.setDetail("sayHello()\n this will say hello to the people");
-				completionItems.add(completionItem);
-			} catch (final Exception e) {
-				// TODO: Handle the exception.
-			}
-			return Either.forLeft(completionItems);
-		});
+		final TextDocumentIdentifier textDocumentIdentifier = completionParams.getTextDocument();
+		return computeRexxFileAsync(textDocumentIdentifier, this::computeCompletions);
+	}
+
+	private Either<List<CompletionItem>, CompletionList> computeCompletions(final CancelChecker pCancelChecker,
+			final RexxFile pRexxFile)
+	{
+		final List<CompletionItem> completionItems = new ArrayList<>();
+		for (final String variable : pRexxFile.getVariables()) {
+			final CompletionItem completionItem = new CompletionItem(variable);
+			completionItem.setKind(CompletionItemKind.Variable);
+			completionItem.setInsertText(variable);
+			completionItem.setDetail("Variable " + variable);
+			completionItems.add(completionItem);
+		}
+		final CompletionList completionList = new CompletionList();
+		completionList.setIsIncomplete(true);
+		completionList.setItems(completionItems);
+		return Either.forRight(completionList);
 	}
 
 	@Override
@@ -163,24 +196,67 @@ public class RexxTextDocumentService implements TextDocumentService {
 	@Override
 	public void didOpen(final DidOpenTextDocumentParams didOpenTextDocumentParams)
 	{
-		System.out.println(didOpenTextDocumentParams);
+		final RexxDocument rexxDocument = _rexxDocuments.onDidOpenTextDocument(didOpenTextDocumentParams);
+		triggerValidationFor(rexxDocument);
 	}
 
 	@Override
 	public void didChange(final DidChangeTextDocumentParams didChangeTextDocumentParams)
 	{
-		System.out.println(didChangeTextDocumentParams);
+		final RexxDocument rexxDocument = _rexxDocuments.onDidChangeTextDocument(didChangeTextDocumentParams);
+		triggerValidationFor(rexxDocument);
 	}
 
 	@Override
 	public void didClose(final DidCloseTextDocumentParams didCloseTextDocumentParams)
 	{
-
+		_rexxDocuments.onDidCloseTextDocument(didCloseTextDocumentParams);
+		final TextDocumentIdentifier document = didCloseTextDocumentParams.getTextDocument();
+		final String uri = document.getUri();
+		// TODO clean diagnostics
 	}
 
 	@Override
 	public void didSave(final DidSaveTextDocumentParams didSaveTextDocumentParams)
 	{
+	}
 
+	private void triggerValidationFor(final RexxDocument pRexxDocument)
+	{
+		pRexxDocument.getModel().thenAcceptAsync(this::validate);
+	}
+
+	private void validate(final RexxFile pRexxFile) throws CancellationException
+	{
+		final CancelChecker cancelChecker = pRexxFile.getCancelChecker();
+		cancelChecker.checkCanceled();
+		// TODO publish diagnostics
+	}
+
+	public RexxDocument getDocument(final String pUri)
+	{
+		return _rexxDocuments.getDocument(pUri);
+	}
+
+	private <R> CompletableFuture<R> computeRexxFileAsync(final TextDocumentIdentifier pDocumentIdentifier,
+			final BiFunction<CancelChecker, RexxFile, R> pBiFunction)
+	{
+		final RexxDocument rexxDocument = getDocument(pDocumentIdentifier.getUri());
+		return computeModelAsync(rexxDocument.getModel(), pBiFunction);
+	}
+
+	private static <R> CompletableFuture<R> computeModelAsync(final CompletableFuture<RexxFile> pRexxFile,
+			final BiFunction<CancelChecker, RexxFile, R> pBiFunction)
+	{
+		final CompletableFuture<CancelChecker> start = new CompletableFuture<CancelChecker>();
+		final CompletableFuture<R> result = start.thenCombineAsync(pRexxFile, pBiFunction);
+		final CancelChecker cancelIndicator = () -> {
+			if (result.isCancelled()) {
+				log.info("computing of model is cancelled");
+				throw new CancellationException();
+			}
+		};
+		start.complete(cancelIndicator);
+		return result;
 	}
 }
