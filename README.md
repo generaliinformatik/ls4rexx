@@ -1,4 +1,4 @@
-# lsp4rexx
+# ls4rexx
 
 The REXX Language Server is based on the following Eclipse technologies
 
@@ -10,12 +10,12 @@ This language server does not attempt to provide a real syntax check but suffici
 
 # Licenses
 
-lsp4rexx is published under the Apache 2.0 License
+ls4rexx is published under the Apache 2.0 License
 
 # Building and Contributing
 
-To build and contribute to lsp4rexx consult the [Contributing Guilde](https://github.com/holzem/lsp4rexx/blob/master/CONTRIBUTING.md)
+To build and contribute to ls4rexx consult the [Contributing Guilde](https://github.com/holzem/ls4rexx/blob/master/CONTRIBUTING.md)
 
 # Acknowledgements
 
-This projects makes use of third party projects. Refer to the [Acknowledgements Information](https://github.com/holzem/lsp4rexx/blob/master/ACKNOWLEDGEMENT.md)   
+This projects makes use of third party projects. Refer to the [Acknowledgements Information](https://github.com/holzem/ls4rexx/blob/master/ACKNOWLEDGEMENT.md)   
