@@ -50,7 +50,7 @@ public class LTokenBuilder
 
 	public LTokenBuilder createComment(final String pText)
 	{
-		final LToken token = new LToken(LTokenType.COMMENT_TEXT, pText, _line, _column, _charBegin);
+		final LToken token = new LToken(LTokenType.COMMENT, pText, _line, _column, _charBegin);
 		_charBegin = token.getCharEnd();
 		_column += (token.getCharEnd() - token.getCharBegin());
 		final long newlines = pText.chars().filter(num -> num == '\n').count();

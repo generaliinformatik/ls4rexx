@@ -59,15 +59,15 @@ public class LDocumentItem extends TextDocumentItem
 
 	private LModel parseDocument(final CancelChecker pCancelChecker)
 	{
-		final long start = System.currentTimeMillis();
+		final long startTime = System.currentTimeMillis();
 		LModel lModel = null;
 		try {
 			log.debug("Start parse of {}", getUri());
 			lModel = _parseBiFunction.apply(this, pCancelChecker);
 		} catch (final CancellationException exc) {
-			log.debug("Cancel parse of {} in {}ms", getUri(), (System.currentTimeMillis() - start));
+			log.debug("CANCEL {}ms parse of {}", (System.currentTimeMillis() - startTime), getUri());
 		} finally {
-			log.debug("End parse of {} in {}ms", getUri(), (System.currentTimeMillis() - start));
+			log.debug("END {}ms parse of {} ", (System.currentTimeMillis() - startTime), getUri());
 		}
 		return lModel;
 	}

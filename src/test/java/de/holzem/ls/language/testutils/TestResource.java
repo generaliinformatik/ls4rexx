@@ -37,7 +37,11 @@ public class TestResource
 	private final String _filePath;
 
 	private TestResource(final String pFileName) {
-		_filePath = "src/test/resources/" + pFileName;
+		if (Paths.get(pFileName).isAbsolute()) {
+			_filePath = pFileName;
+		} else {
+			_filePath = "src/test/resources/" + pFileName;
+		}
 	}
 
 	private String getContent()

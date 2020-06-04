@@ -51,7 +51,7 @@ public enum LParser
 	public LModel parse(final String pUri, final String pText, final CancelChecker pCancelChecker)
 			throws CancellationException
 	{
-		log.info("parse {}", pUri);
+		log.debug("parse {}", pUri);
 		final LParserHandler handler = new LParserHandler();
 		final Reader reader = new StringReader(pText);
 		final LLexer lexer = new LLexer(reader);
@@ -88,7 +88,7 @@ public enum LParser
 		}
 		final LModel lModel = new LModel.LModelBuilder().uri(pUri).tokens(tokens).variables(handler.getVariables())
 				.labels(handler.getLabels()).cancelChecker(pCancelChecker).build();
-		log.info("parsing done {}: {} variables, {} labels", pUri, handler.getVariables().size(),
+		log.debug("parsing done {}: {} variables, {} labels", pUri, handler.getVariables().size(),
 				handler.getLabels().size());
 		return lModel;
 	}
@@ -101,7 +101,7 @@ public enum LParser
 			final LTokenType lTokenType = token.getType();
 			switch (lTokenType) {
 			case WHITESPACE:
-			case COMMENT_TEXT:
+			case COMMENT:
 				pCompleteTokenList.add(token);
 				break;
 			default:

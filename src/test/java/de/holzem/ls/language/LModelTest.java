@@ -25,10 +25,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import de.holzem.ls.language.LModel;
-import de.holzem.ls.language.LParser;
-import de.holzem.ls.language.LToken;
-import de.holzem.ls.language.LTokenType;
 import de.holzem.ls.language.testutils.LTokenBuilder;
 import de.holzem.ls.language.testutils.TestResource;
 import nl.jqno.equalsverifier.EqualsVerifier;

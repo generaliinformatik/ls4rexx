@@ -13,50 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.holzem.ls.language;
+package de.holzem.ls.language.testutils;
+
+import de.holzem.ls.language.LModel;
+import de.holzem.ls.language.LParser;
 
 /**
- * LTokenType
+ * PrintLModel
  */
-public enum LTokenType {
-	SYNTHETIC,
-	COMMENT,
-	WHITESPACE,
-	COMMA,
-	COLON,
-	SEMICOLON,
-	LEFT_PARENTHESIS,
-	RIGHT_PARENTHESIS,
-	DOT,
-	PLUS,
-	MINUS,
-	MULTI,
-	DIVIDE,
-	DIVIDE_INTEGER,
-	DIVIDE_REMAINDER,
-	EQ,
-	NE,
-	LT,
-	LE,
-	GT,
-	GE,
-	STRICT_EQ,
-	STRICT_NE,
-	STRICT_LT,
-	STRICT_LE,
-	STRICT_GT,
-	STRICT_GE,
-	AND,
-	OR,
-	NOT,
-	CONCAT,
-	SQUOTE_STRING,
-	SQUOTE_STRING_UNCLOSED,
-	DQUOTE_STRING,
-	DQUOTE_STRING_UNCLOSED,
-	NUMBER,
-	IDENTIFIER,
-	KEYWORD,
-	FUNCTION
-
+public class PrintLModel
+{
+	public static void main(final String[] arg)
+	{
+		if (arg.length == 0) {
+			System.out.println("Usage: PrintLModel <filename>");
+			System.exit(1);
+		}
+		final String filename = arg[0];
+		final String content = TestResource.getContent(filename);
+		final LModel lModel = LParser.INSTANCE.parse(filename, content, null);
+		System.out.println(lModel);
+	}
 }

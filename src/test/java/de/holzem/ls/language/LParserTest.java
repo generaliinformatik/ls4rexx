@@ -22,8 +22,6 @@ import static org.hamcrest.Matchers.is;
 
 import org.junit.jupiter.api.Test;
 
-import de.holzem.ls.language.LModel;
-import de.holzem.ls.language.LParser;
 import de.holzem.ls.language.testutils.TestResource;
 
 /**

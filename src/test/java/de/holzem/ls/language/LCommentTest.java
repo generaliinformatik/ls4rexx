@@ -39,7 +39,7 @@ class LCommentTest
 				.addln("/* comment */").build();
 		LToken stringToken;
 		stringToken = lexer.nextToken();
-		assertThat(stringToken.getType(), is(equalTo(LTokenType.COMMENT_TEXT)));
+		assertThat(stringToken.getType(), is(equalTo(LTokenType.COMMENT)));
 		assertThat(stringToken.getText(), is(equalTo("/* comment */")));
 		assertThat(stringToken.getLine(), is(equalTo(0)));
 		assertThat(stringToken.getColumn(), is(equalTo(0)));
@@ -63,7 +63,7 @@ class LCommentTest
 				.add("/* outer comment /* inner comment */ outer comment*/").build();
 		LToken stringToken;
 		stringToken = lexer.nextToken();
-		assertThat(stringToken.getType(), is(equalTo(LTokenType.COMMENT_TEXT)));
+		assertThat(stringToken.getType(), is(equalTo(LTokenType.COMMENT)));
 		assertThat(stringToken.getText(), is(equalTo("/* outer comment /* inner comment */ outer comment*/")));
 		assertThat(lexer.nextToken(), is(nullValue()));
 		assertThat(lexer.getLErrors().getErrors(), is(empty()));
@@ -76,24 +76,44 @@ class LCommentTest
 				.addln("/* First Line") //
 				.addln("   Second Line") //
 				.add("   Third Line */").build();
-		LToken stringToken;
-		stringToken = lexer.nextToken();
-		assertThat(stringToken.getType(), is(equalTo(LTokenType.COMMENT_TEXT)));
-		assertThat(stringToken.getText(), is(equalTo("/* First Line\r\n   Second Line\r\n   Third Line */")));
+		LToken token;
+		token = lexer.nextToken();
+		assertThat(token.getType(), is(equalTo(LTokenType.COMMENT)));
+		assertThat(token.getText(), is(equalTo("/* First Line\r\n   Second Line\r\n   Third Line */")));
 		assertThat(lexer.nextToken(), is(nullValue()));
 		assertThat(lexer.getLErrors().getErrors(), is(empty()));
 	}
 
+	@Test
 	void testNestedCommentMultiLine() throws IOException
 	{
 		final LLexer lexer = new LLexerBuilder() //
 				.addln("/* First Line") //
 				.addln("   /* Second Line */") //
-				.addln("   Third Line */").build();
-		LToken stringToken;
-		stringToken = lexer.nextToken();
-		assertThat(stringToken.getType(), is(equalTo(LTokenType.COMMENT_TEXT)));
-		assertThat(stringToken.getText(), is(equalTo("/* First Line\r\n   /* Second Line */\r\n   Third Line */")));
+				.add("   Third Line */").build();
+		LToken token;
+		token = lexer.nextToken();
+		assertThat(token.getType(), is(equalTo(LTokenType.COMMENT)));
+		assertThat(token.getText(), is(equalTo("/* First Line\r\n   /* Second Line */\r\n   Third Line */")));
+		assertThat(lexer.nextToken(), is(nullValue()));
+		assertThat(lexer.getLErrors().getErrors(), is(empty()));
+	}
+
+	@Test
+	void testCommentWithStar() throws IOException
+	{
+		final LLexer lexer = new LLexerBuilder() //
+				.addln("/*REXX******************************************************************") //
+				.addln("*") //
+				.addln("* REXX-Name")//
+				.addln("*") //
+				.add("***********************************************************************/") //
+				.build();
+		LToken token;
+		token = lexer.nextToken();
+		assertThat(token.getType(), is(equalTo(LTokenType.COMMENT)));
+		assertThat(token.getText(), is(equalTo(
+				"/*REXX******************************************************************\r\n*\r\n* REXX-Name\r\n*\r\n***********************************************************************/")));
 		assertThat(lexer.nextToken(), is(nullValue()));
 		assertThat(lexer.getLErrors().getErrors(), is(empty()));
 	}

@@ -33,7 +33,7 @@ import static de.holzem.ls.language.LError.*;
 
   /**
    * Resumes scanning until the next regular expression is matched, the end of input is encountered
-   * or an I/O-Error occurs. WHITESPACE and COMMENT_TEXT Tokens are skipped.
+   * or an I/O-Error occurs. WHITESPACE and COMMENT Tokens are skipped.
    *
    * @return the next token.
    * @exception java.io.IOException if any I/O-Error occurs.
@@ -42,7 +42,7 @@ import static de.holzem.ls.language.LError.*;
     LToken nextToken = null;
     do {
       nextToken = nextToken();
-    } while (nextToken != null && (nextToken.getType() == COMMENT_TEXT || nextToken.getType() == WHITESPACE));
+    } while (nextToken != null && (nextToken.getType() == COMMENT || nextToken.getType() == WHITESPACE));
     return nextToken;
   }
 
@@ -61,7 +61,7 @@ import static de.holzem.ls.language.LError.*;
 %line
 %column
 
-%state COMMENT
+%state COMMENT_STATE
 
 %unicode
 %ignorecase
@@ -83,7 +83,7 @@ NEWLINE=\r|\n|\r\n
 WHITE_SPACE_CHAR=[\n\r\ \b\012]
 DQUOTE_STRING_TEXT=(\"\"|[^\n\r\"]|\\{WHITE_SPACE_CHAR}+\\)*
 SQUOTE_STRING_TEXT=(''|[^\n\r']|\\{WHITE_SPACE_CHAR}+\\)*
-COMMENT_TEXT=([^*/\n]|[^*\n]"/"[^*\n]|[^/\n]"*"[^/\n]|"*"[^/\n]|"/"[^*\n])+
+COMMENT_TEXT=([^*/\n]|[^*\n]"/"[^*\n]|[^/*]"*"[^/]|"*"[^/\n]|"/"[^*\n])+
 IDENT = {ALPHA}(\.|{ALPHA}|{DIGIT})*
 
 %%
@@ -253,7 +253,7 @@ IDENT = {ALPHA}(\.|{ALPHA}|{DIGIT})*
 
   {NONNEWLINE_WHITE_SPACE_CHAR}+ { return (new LToken(WHITESPACE,yytext(),yyline,yycolumn,yychar)); }
 
-  "/*" { yybegin(COMMENT); _commentLine = yyline; _commentColumn = yycolumn; _commentChar = yychar; _commentText = new StringBuilder("/*"); _commentCount++; }
+  "/*" { yybegin(COMMENT_STATE); _commentLine = yyline; _commentColumn = yycolumn; _commentChar = yychar; _commentText = new StringBuilder("/*"); _commentCount++; }
 
   \"{DQUOTE_STRING_TEXT}\" {
     return (new LToken(DQUOTE_STRING,yytext(),yyline,yycolumn,yychar));
@@ -281,17 +281,17 @@ IDENT = {ALPHA}(\.|{ALPHA}|{DIGIT})*
 }
 
 /*--------------------------------------------------------------------------------------
-* State COMMENT
+* State COMMENT_STATE
 *-------------------------------------------------------------------------------------*/
-<COMMENT> {
-  "/*" { _commentCount++; _commentText.append(yytext()); }
-  "*/" { _commentText.append(yytext()); if (--_commentCount == 0) { yybegin(YYINITIAL); return (new LToken(COMMENT_TEXT,_commentText.toString(),_commentLine,_commentColumn,_commentChar)); } }
+<COMMENT_STATE> {
+  "/*"           { _commentCount++; _commentText.append(yytext()); }
+  "*/"           { _commentText.append(yytext()); if (--_commentCount == 0) { yybegin(YYINITIAL); return (new LToken(COMMENT,_commentText.toString(),_commentLine,_commentColumn,_commentChar)); } }
   {COMMENT_TEXT} { _commentText.append(yytext()); }
-  {NEWLINE} { _commentText.append(yytext()); }
+  {NEWLINE}      { _commentText.append(yytext()); }
 }
 
 . {
-  System.out.println("Illegal character: <" + yytext() + ">");
+  System.out.println("Illegal character: <" + yytext() + "> at (" + yyline + "," + yycolumn + ")");
 	addError(E_ILLEGAL_CHAR);
 }
 
