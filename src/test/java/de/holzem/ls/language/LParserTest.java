@@ -46,6 +46,7 @@ class LParserTest
 		final String uri = "rexx/call.rex";
 		final String testResourceContent = TestResource.getContent(uri);
 		final LModel lModel = LParser.INSTANCE.parse(uri, testResourceContent);
-		assertThat(lModel.getLabels(), contains("TESTPROC"));
+		assertThat(lModel.getLabels().size(), is(equalTo(1)));
+		assertThat(lModel.getLabels().get(0).getText(), is(equalTo("TESTPROC")));
 	}
 }

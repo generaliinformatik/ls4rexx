@@ -35,7 +35,7 @@ public enum LParser
 {
 	INSTANCE;
 
-	LModel parse(final String pUri, final String pText)
+	public LModel parse(final String pUri, final String pText)
 	{
 		return parse(pUri, pText, null);
 	}

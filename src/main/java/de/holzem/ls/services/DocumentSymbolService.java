@@ -62,17 +62,6 @@ public class DocumentSymbolService extends LService
 		list.add(si);
 	}
 
-	private void addVariable(final LModel pLModel, final List<SymbolInformation> list)
-	{
-		final SymbolInformation si = new SymbolInformation();
-		si.setKind(SymbolKind.Variable);
-		si.setName("Variable");
-		final Range range = new Range(new Position(3, 0), new Position(3, 1));
-		final Location location = new Location(pLModel.getUri(), range);
-		si.setLocation(location);
-		list.add(si);
-	}
-
 	private void addMethods(final LModel pLModel, final List<SymbolInformation> list)
 	{
 		for (final LToken label : pLModel.getLabels()) {

@@ -51,7 +51,7 @@ public final class LModel
 	{
 		try {
 			// remove "/file:///" from uri
-			final String filePath = uri.substring(8);
+			final String filePath = uri.startsWith("/file:///") ? uri.substring(8) : uri;
 			final Path path = Paths.get(filePath);
 			return path.getFileName().toString();
 		} catch (final InvalidPathException exc) {

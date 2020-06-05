@@ -8,6 +8,10 @@ The GitHub repository <https://github.com/angelozerr/lemminx> is released under 
 Eclipse Public License - v 2.0. This was a really good starting point to understand
 how to build a language server and how to interact with an IDE.
 
+I made use of some of the implementation details of lemminx to get an idea how
+the language server protocol is implemented in 
+[Eclipse LSP4J](https://github.com/eclipse/lsp4j "Eclipse LSP4J").
+
 ## https://github.com/angelozerr/lsp4e-xml
 
 The GitHub repository <https://github.com/angelozerr/lsp4e-xml> is released under the 
