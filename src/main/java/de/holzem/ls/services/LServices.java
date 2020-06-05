@@ -17,19 +17,22 @@ package de.holzem.ls.services;
 
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.ServerCapabilities;
+import org.eclipse.lsp4j.TextDocumentSyncKind;
 import org.eclipse.lsp4j.jsonrpc.CancelChecker;
 
 import de.holzem.ls.language.LModel;
 
 /**
- * LanguageServices
+ * LServices
  */
-public class LanguageServices
+public class LServices
 {
 	private final CompletionService _completionService;
 
-	public LanguageServices() {
-		_completionService = new CompletionService(this);
+	public LServices(final ServerCapabilities pServerCapabilities) {
+		pServerCapabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
+		_completionService = new CompletionService(this, pServerCapabilities);
 	}
 
 	public CompletionList doComplete(final CancelChecker pCancelChecker, final LModel pLModel, final Position pPosition)

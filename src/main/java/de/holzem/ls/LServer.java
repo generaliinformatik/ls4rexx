@@ -15,7 +15,6 @@
  */
 package de.holzem.ls;
 
-import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -23,11 +22,9 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import org.eclipse.lsp4j.CompletionOptions;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.ServerCapabilities;
-import org.eclipse.lsp4j.TextDocumentSyncKind;
 import org.eclipse.lsp4j.jsonrpc.Launcher;
 import org.eclipse.lsp4j.launch.LSPLauncher;
 import org.eclipse.lsp4j.services.LanguageClient;
@@ -36,9 +33,9 @@ import org.eclipse.lsp4j.services.LanguageServer;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import org.eclipse.lsp4j.services.WorkspaceService;
 
+import de.holzem.ls.services.LServices;
 import de.holzem.ls.services.LTextDocumentService;
 import de.holzem.ls.services.LWorkspaceService;
-import de.holzem.ls.services.LanguageServices;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -46,33 +43,23 @@ public class LServer implements LanguageServer, LanguageClientAware
 {
 	private final TextDocumentService _textDocumentService;
 	private final WorkspaceService _workspaceService;
-	private final LanguageServices _languageServices;
+	private final LServices _lServices;
+	private final ServerCapabilities _serverCapabilities;
 	private LanguageClient _languageClient;
 	private int errorCode = 1;
 
 	public LServer() {
 		_workspaceService = new LWorkspaceService();
-		_languageServices = new LanguageServices();
+		_serverCapabilities = new ServerCapabilities();
+		_lServices = new LServices(_serverCapabilities);
 		_textDocumentService = new LTextDocumentService(this);
 	}
-
-	private static final String[] COMPLETION_TRIGGER_CHARACTERS = { "_", "$", ".", //
-			"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "o", "p", "q", "r", "s", "t", "u", "v",
-			"w", "x", "y", "z", //
-			"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "O", "P", "Q", "R", "S", "T", "U", "V",
-			"W", "X", "Y", "Z", //
-	};
 
 	@Override
 	public CompletableFuture<InitializeResult> initialize(final InitializeParams initializeParams)
 	{
-		// Initialize the InitializeResult for this LS.
-		final InitializeResult initializeResult = new InitializeResult(new ServerCapabilities());
-		// Set the capabilities of the LS to inform the client.
-		initializeResult.getCapabilities().setTextDocumentSync(TextDocumentSyncKind.Full);
-		final CompletionOptions completionOptions = new CompletionOptions();
-		completionOptions.setTriggerCharacters(Arrays.asList(COMPLETION_TRIGGER_CHARACTERS));
-		initializeResult.getCapabilities().setCompletionProvider(completionOptions);
+		// ServerCapabilities is initialized by the registered LServices
+		final InitializeResult initializeResult = new InitializeResult(_serverCapabilities);
 		return CompletableFuture.supplyAsync(() -> initializeResult);
 	}
 
@@ -112,9 +99,9 @@ public class LServer implements LanguageServer, LanguageClientAware
 		_languageClient = languageClient;
 	}
 
-	public LanguageServices getLanguageServices()
+	public LServices getLServices()
 	{
-		return _languageServices;
+		return _lServices;
 	}
 
 	public LanguageClient getLanguageClient()

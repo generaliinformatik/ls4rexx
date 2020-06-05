@@ -16,18 +16,18 @@
 package de.holzem.ls.services;
 
 /**
- * LanguageService
+ * LService
  */
-public class LanguageService
+public class LService
 {
-	protected final LanguageServices _languageServices;
+	protected final LServices _lServices;
 
-	public LanguageService(final LanguageServices pLanguageServices) {
-		_languageServices = pLanguageServices;
+	public LService(final LServices pLServices) {
+		_lServices = pLServices;
 	}
 
-	public LanguageServices getLanguageService()
+	public LServices getLanguageService()
 	{
-		return _languageServices;
+		return _lServices;
 	}
 }

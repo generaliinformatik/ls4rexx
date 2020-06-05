@@ -82,7 +82,7 @@ public class LTextDocumentService implements TextDocumentService
 		return computeResultAsync(textDocumentIdentifier, //
 				// BiFunction taking a CancelChecker and a LModel to create a CompletionList
 				(cancelChecker, lModel) -> {
-					final CompletionList list = getLanguageServices().doComplete(cancelChecker, lModel, position);
+					final CompletionList list = getLServices().doComplete(cancelChecker, lModel, position);
 					return Either.forRight(list);
 				});
 	}
@@ -236,9 +236,9 @@ public class LTextDocumentService implements TextDocumentService
 		return lDocumentItem.computeResultAsync(pComputeResultBiFunction);
 	}
 
-	private LanguageServices getLanguageServices()
+	private LServices getLServices()
 	{
-		return _lServer.getLanguageServices();
+		return _lServer.getLServices();
 	}
 
 	private static void log(final String pFunction, final TextDocumentIdentifier pTextDocumentIdentifier,
