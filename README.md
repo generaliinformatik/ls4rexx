@@ -39,9 +39,9 @@ The following features are in progress:
 
 # Developer
 
-To debug ls4rexx you can use {{de.holzem.ls.test.LServerSocketLauncher}}:
+To debug ls4rexx you can use `de.holzem.ls.test.LServerSocketLauncher`:
 
-1. Run the {{de.holzem.ls.test.LServerSocketLauncher}} in debug mode (e.g. in eclipse)
+1. Run the `de.holzem.ls.test.LServerSocketLauncher` in debug mode (e.g. in eclipse)
 2. Connect your client via socket port. Default port is 5008, but you can change it with start argument `--port` in step 1
 
 # Clients
