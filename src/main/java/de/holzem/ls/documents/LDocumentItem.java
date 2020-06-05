@@ -19,13 +19,16 @@ import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 import org.eclipse.lsp4j.TextDocumentContentChangeEvent;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.jsonrpc.CancelChecker;
-import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
+
+import com.google.common.base.Function;
 
 import de.holzem.ls.language.LModel;
+import de.holzem.ls.language.LParser;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -34,25 +37,52 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LDocumentItem extends TextDocumentItem
 {
-	final BiFunction<TextDocumentItem, CancelChecker, LModel> _parseBiFunction;
 	private CompletableFuture<LModel> _model;
 
 	/**
 	 * Constructor
 	 */
-	public LDocumentItem(final TextDocumentItem pTextDocumentItem,
-			final BiFunction<TextDocumentItem, CancelChecker, LModel> pParseBiFunction) {
+	public LDocumentItem(final TextDocumentItem pTextDocumentItem) {
 		super.setUri(pTextDocumentItem.getUri());
 		super.setText(pTextDocumentItem.getText());
 		super.setVersion(pTextDocumentItem.getVersion());
 		super.setLanguageId(pTextDocumentItem.getLanguageId());
-		_parseBiFunction = pParseBiFunction;
 	}
 
-	public CompletableFuture<LModel> getModel()
+	/**
+	 * Run an action on the model of this LDocumentItem.
+	 *
+	 * @param pAction the action to run
+	 */
+	public void runActionAsync(final Consumer<LModel> pAction)
+	{
+		getModel().thenAcceptAsync(pAction);
+	}
+
+	/**
+	 * Compute a result on the model of this LDocumentItem.
+	 *
+	 * @param <Result>                 the generic <code>Result</code>
+	 * @param pComputeResultBiFunction the function taking a cancel checker and the model to produce the
+	 *                                 <code>Result</code>
+	 * @return the computed <code>Result</code>
+	 */
+	public <Result> CompletableFuture<Result> computeResultAsync(
+			final BiFunction<CancelChecker, LModel, Result> pComputeResultBiFunction)
+	{
+		final CompletableFuture<LModel> lModel = getModel();
+		return computeResultForModelAsync(lModel, pComputeResultBiFunction);
+	}
+
+	/**
+	 * Create a {@link CompletableFuture} of the {@link LModel} for this LDocumentItem
+	 * 
+	 * @return the {@link CompletableFuture} fo the {@link LModel}
+	 */
+	private CompletableFuture<LModel> getModel()
 	{
 		if (_model == null) {
-			_model = CompletableFutures.computeAsync(this::parseDocument);
+			_model = computeModelAsync(this::parseDocument);
 		}
 		return _model;
 	}
@@ -63,7 +93,7 @@ public class LDocumentItem extends TextDocumentItem
 		LModel lModel = null;
 		try {
 			log.debug("Start parse of {}", getUri());
-			lModel = _parseBiFunction.apply(this, pCancelChecker);
+			lModel = LParser.INSTANCE.parse(this, pCancelChecker);
 		} catch (final CancellationException exc) {
 			log.debug("CANCEL {}ms parse of {}", (System.currentTimeMillis() - startTime), getUri());
 		} finally {
@@ -86,6 +116,48 @@ public class LDocumentItem extends TextDocumentItem
 	{
 		super.setText(pText);
 		cancelModel();
+	}
+
+	/**
+	 * Helper method to create a {@link CompletableFuture} of a generic <code>Result</code> that can be cancelled
+	 *
+	 * @param pComputeResultBiFunction function to compute the result using the {@link LModel}
+	 * @return the {@link CompletableFuture} of the generic <Result>
+	 */
+	private static <Result> CompletableFuture<Result> computeResultForModelAsync(
+			final CompletableFuture<LModel> pLModel,
+			final BiFunction<CancelChecker, LModel, Result> pComputeResultBiFunction)
+	{
+		final CompletableFuture<CancelChecker> start = new CompletableFuture<CancelChecker>();
+		final CompletableFuture<Result> result = start.thenCombineAsync(pLModel, pComputeResultBiFunction);
+		final CancelChecker cancelIndicator = // checkCancel
+				() -> {
+					if (result.isCancelled()) {
+						throw new CancellationException();
+					}
+				};
+		start.complete(cancelIndicator);
+		return result;
+	}
+
+	/**
+	 * Helper method to create a {@link CompletableFuture} of a {@link LModel} that can be cancelled
+	 *
+	 * @param pComputeModelFunction function to compute the model
+	 * @return the {@link CompletableFuture} of the {@link LModel}
+	 */
+	private static CompletableFuture<LModel> computeModelAsync(
+			final Function<CancelChecker, LModel> pComputeModelFunction)
+	{
+		final CompletableFuture<CancelChecker> start = new CompletableFuture<>();
+		final CompletableFuture<LModel> model = start.thenApplyAsync(pComputeModelFunction);
+		final CancelChecker cancelIndicator = // checkCancel
+				() -> {
+					if (model.isCancelled())
+						throw new CancellationException();
+				};
+		start.complete(cancelIndicator);
+		return model;
 	}
 
 	/**

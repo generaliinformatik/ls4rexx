@@ -56,7 +56,6 @@ import de.holzem.ls.LServer;
 import de.holzem.ls.documents.LDocumentItem;
 import de.holzem.ls.documents.LDocuments;
 import de.holzem.ls.language.LModel;
-import de.holzem.ls.language.LParser;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -70,12 +69,7 @@ public class LTextDocumentService implements TextDocumentService
 	 */
 	public LTextDocumentService(final LServer pLServer) {
 		_lServer = pLServer;
-		_lDocuments = new LDocuments(this::parseBiFunction);
-	}
-
-	private LModel parseBiFunction(final TextDocumentItem pDocumentItem, final CancelChecker pCancelChecker)
-	{
-		return LParser.INSTANCE.parse(pDocumentItem, pCancelChecker);
+		_lDocuments = new LDocuments();
 	}
 
 	@Override
@@ -84,10 +78,13 @@ public class LTextDocumentService implements TextDocumentService
 	{
 		final TextDocumentIdentifier textDocumentIdentifier = completionParams.getTextDocument();
 		final Position position = completionParams.getPosition();
-		return computeRexxFileAsync(textDocumentIdentifier, (cancelChecker, rexxFile) -> {
-			final CompletionList list = getLanguageServices().doComplete(rexxFile, position, cancelChecker);
-			return Either.forRight(list);
-		});
+		log("completion", textDocumentIdentifier, position);
+		return computeResultAsync(textDocumentIdentifier, //
+				// BiFunction taking a CancelChecker and a LModel to create a CompletionList
+				(cancelChecker, lModel) -> {
+					final CompletionList list = getLanguageServices().doComplete(cancelChecker, lModel, position);
+					return Either.forRight(list);
+				});
 	}
 
 	@Override
@@ -183,46 +180,60 @@ public class LTextDocumentService implements TextDocumentService
 	@Override
 	public void didOpen(final DidOpenTextDocumentParams didOpenTextDocumentParams)
 	{
+		final TextDocumentItem textDocumentItem = didOpenTextDocumentParams.getTextDocument();
+		log("open", textDocumentItem);
 		final LDocumentItem lDocumentItem = _lDocuments.onDidOpenTextDocument(didOpenTextDocumentParams);
-		triggerValidationFor(lDocumentItem);
+		lDocumentItem.runActionAsync(this::validate);
 	}
 
 	@Override
 	public void didChange(final DidChangeTextDocumentParams didChangeTextDocumentParams)
 	{
+		final TextDocumentIdentifier textDocumentIdentifier = didChangeTextDocumentParams.getTextDocument();
+		log("change", textDocumentIdentifier);
 		final LDocumentItem lDocumentItem = _lDocuments.onDidChangeTextDocument(didChangeTextDocumentParams);
-		triggerValidationFor(lDocumentItem);
+		lDocumentItem.runActionAsync(this::validate);
 	}
 
 	@Override
 	public void didClose(final DidCloseTextDocumentParams didCloseTextDocumentParams)
 	{
+		final TextDocumentIdentifier textDocumentIdentifier = didCloseTextDocumentParams.getTextDocument();
+		log("close", textDocumentIdentifier);
 		_lDocuments.onDidCloseTextDocument(didCloseTextDocumentParams);
-		final TextDocumentIdentifier document = didCloseTextDocumentParams.getTextDocument();
-		final String uri = document.getUri();
-		// TODO clean diagnostics
 	}
 
 	@Override
 	public void didSave(final DidSaveTextDocumentParams didSaveTextDocumentParams)
 	{
-	}
-
-	private void triggerValidationFor(final LDocumentItem pLDocumentItem)
-	{
-		pLDocumentItem.getModel().thenAcceptAsync(this::validate);
+		final TextDocumentIdentifier textDocumentIdentifier = didSaveTextDocumentParams.getTextDocument();
+		log("save", textDocumentIdentifier);
 	}
 
 	private void validate(final LModel pLModel) throws CancellationException
 	{
+		log("validate", pLModel);
 		final CancelChecker cancelChecker = pLModel.getCancelChecker();
 		cancelChecker.checkCanceled();
 		// TODO publish diagnostics
 	}
+	// ------------------------------------------------------------------------
+	// convenience methods
+	// ------------------------------------------------------------------------
 
-	private LDocumentItem getDocument(final String pUri)
+	/**
+	 * Run the BiFunction for the given TextDocument
+	 *
+	 * @param <Result>                 the generic <code>Result</code>
+	 * @param pTextDocumentIdentifier  the identifier for the text document
+	 * @param pComputeResultBiFunction the BiFunction to compute the <code>Result</code>
+	 * @return a {@link CompletableFuture} of the <code>Result</code>
+	 */
+	private <Result> CompletableFuture<Result> computeResultAsync(final TextDocumentIdentifier pTextDocumentIdentifier,
+			final BiFunction<CancelChecker, LModel, Result> pComputeResultBiFunction)
 	{
-		return _lDocuments.getDocument(pUri);
+		final LDocumentItem lDocumentItem = _lDocuments.getDocument(pTextDocumentIdentifier.getUri());
+		return lDocumentItem.computeResultAsync(pComputeResultBiFunction);
 	}
 
 	private LanguageServices getLanguageServices()
@@ -230,24 +241,25 @@ public class LTextDocumentService implements TextDocumentService
 		return _lServer.getLanguageServices();
 	}
 
-	private <R> CompletableFuture<R> computeRexxFileAsync(final TextDocumentIdentifier pDocumentIdentifier,
-			final BiFunction<CancelChecker, LModel, R> pBiFunction)
+	private static void log(final String pFunction, final TextDocumentIdentifier pTextDocumentIdentifier,
+			final Position pPosition)
 	{
-		final LDocumentItem lDocumentItem = getDocument(pDocumentIdentifier.getUri());
-		return computeModelAsync(lDocumentItem.getModel(), pBiFunction);
+		log.debug("{} for {} at ({},{})", pFunction, pTextDocumentIdentifier.getUri(), pPosition.getLine(),
+				pPosition.getCharacter());
 	}
 
-	private static <R> CompletableFuture<R> computeModelAsync(final CompletableFuture<LModel> pLModel,
-			final BiFunction<CancelChecker, LModel, R> pBiFunction)
+	private static void log(final String pFunction, final TextDocumentIdentifier pTextDocumentIdentifier)
 	{
-		final CompletableFuture<CancelChecker> start = new CompletableFuture<CancelChecker>();
-		final CompletableFuture<R> result = start.thenCombineAsync(pLModel, pBiFunction);
-		final CancelChecker cancelIndicator = () -> {
-			if (result.isCancelled()) {
-				throw new CancellationException();
-			}
-		};
-		start.complete(cancelIndicator);
-		return result;
+		log.debug("{} for {}", pFunction, pTextDocumentIdentifier.getUri());
+	}
+
+	private static void log(final String pFunction, final TextDocumentItem pTextDocumentItem)
+	{
+		log.debug("{} for {}", pFunction, pTextDocumentItem.getUri());
+	}
+
+	private static void log(final String pFunction, final LModel pLModel)
+	{
+		log.debug("{} for {}", pFunction, pLModel.getUri());
 	}
 }

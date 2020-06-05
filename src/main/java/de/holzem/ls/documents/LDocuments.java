@@ -17,29 +17,21 @@ package de.holzem.ls.documents;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiFunction;
 
 import org.eclipse.lsp4j.DidChangeTextDocumentParams;
 import org.eclipse.lsp4j.DidCloseTextDocumentParams;
 import org.eclipse.lsp4j.DidOpenTextDocumentParams;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.TextDocumentItem;
-import org.eclipse.lsp4j.jsonrpc.CancelChecker;
-
-import de.holzem.ls.language.LModel;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * LDocuments
  */
-@Slf4j
 public class LDocuments
 {
-	private final BiFunction<TextDocumentItem, CancelChecker, LModel> _parseBiFunction;
 	private final Map<String, LDocumentItem> _documents;
 
-	public LDocuments(final BiFunction<TextDocumentItem, CancelChecker, LModel> pParseBiFunction) {
-		_parseBiFunction = pParseBiFunction;
+	public LDocuments() {
 		_documents = new HashMap<String, LDocumentItem>();
 	}
 
@@ -52,7 +44,7 @@ public class LDocuments
 
 	public LDocumentItem createDocument(final TextDocumentItem pTextDocumentItem)
 	{
-		final LDocumentItem document = new LDocumentItem(pTextDocumentItem, _parseBiFunction);
+		final LDocumentItem document = new LDocumentItem(pTextDocumentItem);
 		return document;
 	}
 
@@ -61,7 +53,6 @@ public class LDocuments
 		LDocumentItem document = null;
 		synchronized (_documents) {
 			document = getDocument(params.getTextDocument());
-			log.debug("change of {}", document.getUri());
 			if (document != null) {
 				document.setVersion(params.getTextDocument().getVersion());
 				document.update(params.getContentChanges());
@@ -76,7 +67,6 @@ public class LDocuments
 		final TextDocumentItem item = params.getTextDocument();
 		synchronized (_documents) {
 			document = createDocument(item);
-			log.debug("open of {}", document.getUri());
 			_documents.put(document.getUri(), document);
 		}
 		return document;
@@ -87,7 +77,6 @@ public class LDocuments
 		LDocumentItem document = null;
 		synchronized (_documents) {
 			document = getDocument(params.getTextDocument());
-			log.debug("close of {}", document.getUri());
 			if (document != null) {
 				_documents.remove(params.getTextDocument().getUri());
 			}

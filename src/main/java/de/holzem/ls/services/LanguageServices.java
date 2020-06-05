@@ -32,9 +32,8 @@ public class LanguageServices
 		_completionService = new CompletionService(this);
 	}
 
-	public CompletionList doComplete(final LModel pLModel, final Position pPosition,
-			final CancelChecker pCancelChecker)
+	public CompletionList doComplete(final CancelChecker pCancelChecker, final LModel pLModel, final Position pPosition)
 	{
-		return _completionService.doComplete(pLModel, pPosition, pCancelChecker);
+		return _completionService.doComplete(pCancelChecker, pLModel, pPosition);
 	}
 }

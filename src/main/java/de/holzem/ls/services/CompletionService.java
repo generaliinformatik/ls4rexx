@@ -40,7 +40,7 @@ public class CompletionService extends LanguageService
 		super(pLanguageServices);
 	}
 
-	public CompletionList doComplete(final LModel pLModel, final Position pPosition, final CancelChecker pCancelChecker)
+	public CompletionList doComplete(final CancelChecker pCancelChecker, final LModel pLModel, final Position pPosition)
 	{
 		final int line = pPosition.getLine();
 		final int column = pPosition.getCharacter();
