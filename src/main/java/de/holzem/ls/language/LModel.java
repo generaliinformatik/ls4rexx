@@ -15,6 +15,9 @@
  */
 package de.holzem.ls.language;
 
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -42,6 +45,18 @@ public final class LModel
 	{
 		final String fileText = tokens.stream().map(token -> token.getText()).collect(Collectors.joining());
 		return fileText;
+	}
+
+	public String getFileName()
+	{
+		try {
+			// remove "/file:///" from uri
+			final String filePath = uri.substring(8);
+			final Path path = Paths.get(filePath);
+			return path.getFileName().toString();
+		} catch (final InvalidPathException exc) {
+			return "not parsed";
+		}
 	}
 
 	public LToken getToken(final int pIndex)

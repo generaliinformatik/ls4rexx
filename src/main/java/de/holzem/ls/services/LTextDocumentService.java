@@ -129,7 +129,14 @@ public class LTextDocumentService implements TextDocumentService
 	public CompletableFuture<List<? extends SymbolInformation>> documentSymbol(
 			final DocumentSymbolParams documentSymbolParams)
 	{
-		return null;
+		final TextDocumentIdentifier textDocumentIdentifier = documentSymbolParams.getTextDocument();
+		log("documentSymbol", textDocumentIdentifier);
+		return computeResultAsync(textDocumentIdentifier, //
+				// BiFunction taking a CancelChecker and a LModel to create a list with SymbolInformation
+				(cancelChecker, lModel) -> {
+					final List<SymbolInformation> list = getLServices().doDocumentSymbol(cancelChecker, lModel);
+					return list;
+				});
 	}
 
 	@Override
