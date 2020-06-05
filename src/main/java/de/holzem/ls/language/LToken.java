@@ -32,8 +32,8 @@ public class LToken
 		this(pType, pText, pLine, pColumn, pCharBegin, pCharBegin + pText.length());
 	}
 
-	public LToken(final LTokenType pType, final String pText, final int pLine, final int pColumn,
-			final long pCharBegin, final long pCharEnd) {
+	public LToken(final LTokenType pType, final String pText, final int pLine, final int pColumn, final long pCharBegin,
+			final long pCharEnd) {
 		_type = pType;
 		_text = pText;
 		_line = pLine;
@@ -60,6 +60,11 @@ public class LToken
 	public int getColumn()
 	{
 		return _column;
+	}
+
+	public int getLength()
+	{
+		return _text.length();
 	}
 
 	public long getCharBegin()

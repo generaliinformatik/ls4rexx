@@ -38,7 +38,7 @@ public final class LModel
 	private final String uri;
 	private final List<LToken> tokens;
 	private final List<String> variables;
-	private final List<String> labels;
+	private final List<LToken> labels;
 	private final CancelChecker cancelChecker;
 
 	public String getText()

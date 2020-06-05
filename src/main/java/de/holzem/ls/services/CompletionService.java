@@ -100,12 +100,13 @@ public class CompletionService extends LService
 	{
 		final LToken token = pLModel.getToken(pTokenPosition);
 		final String tokenText = token.getText();
-		for (final String label : pLModel.getLabels()) {
-			if (label.startsWith(tokenText)) {
+		for (final LToken label : pLModel.getLabels()) {
+			final String labelText = label.getText();
+			if (labelText.startsWith(tokenText)) {
 				if (!Objects.equals(label, tokenText)) {
-					final CompletionItem completionItem = new CompletionItem(label);
+					final CompletionItem completionItem = new CompletionItem(labelText);
 					completionItem.setKind(CompletionItemKind.Method);
-					completionItem.setInsertText(label);
+					completionItem.setInsertText(labelText);
 					completionItem.setDetail("Label " + label);
 					pCompletionItems.add(completionItem);
 				}

@@ -28,7 +28,7 @@ class LParserHandler
 	Set<String> _registeredVariables = new HashSet<String>();
 	Set<String> _registeredLabels = new HashSet<String>();
 	List<String> _variables = new ArrayList<String>();
-	List<String> _labels = new ArrayList<String>();
+	List<LToken> _labels = new ArrayList<LToken>();
 
 	void handleKeyword(final LToken pPrevToken, final LToken pCurrentToken, final LToken pNextToken)
 	{
@@ -57,7 +57,7 @@ class LParserHandler
 		final String labelText = pPrevToken.getText();
 		final String labelTextUpperCase = labelText.toUpperCase();
 		if (!_registeredLabels.contains(labelTextUpperCase)) {
-			_labels.add(labelText);
+			_labels.add(pPrevToken);
 			_registeredLabels.add(labelTextUpperCase);
 		}
 	}
@@ -68,9 +68,9 @@ class LParserHandler
 		return _variables;
 	}
 
-	List<String> getLabels()
+	List<LToken> getLabels()
 	{
-		_labels.sort((s1, s2) -> s1.compareToIgnoreCase(s2));
+		_labels.sort((s1, s2) -> s1.getText().compareToIgnoreCase(s2.getText()));
 		return _labels;
 	}
 }

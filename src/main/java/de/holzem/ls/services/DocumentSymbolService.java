@@ -27,6 +27,7 @@ import org.eclipse.lsp4j.SymbolKind;
 import org.eclipse.lsp4j.jsonrpc.CancelChecker;
 
 import de.holzem.ls.language.LModel;
+import de.holzem.ls.language.LToken;
 
 /**
  * DocumentSymbolService
@@ -46,6 +47,7 @@ public class DocumentSymbolService extends LService
 	{
 		final List<SymbolInformation> list = new ArrayList<SymbolInformation>();
 		addFileName(pLModel, list);
+		addMethods(pLModel, list);
 		return list;
 	}
 
@@ -71,14 +73,19 @@ public class DocumentSymbolService extends LService
 		list.add(si);
 	}
 
-	private void addFunction(final LModel pLModel, final List<SymbolInformation> list)
+	private void addMethods(final LModel pLModel, final List<SymbolInformation> list)
 	{
-		final SymbolInformation si = new SymbolInformation();
-		si.setKind(SymbolKind.Function);
-		si.setName("Function");
-		final Range range = new Range(new Position(3, 0), new Position(3, 1));
-		final Location location = new Location(pLModel.getUri(), range);
-		si.setLocation(location);
-		list.add(si);
+		for (final LToken label : pLModel.getLabels()) {
+			final SymbolInformation si = new SymbolInformation();
+			si.setKind(SymbolKind.Method);
+			si.setName(label.getText());
+			final int line = label.getLine();
+			final int column = label.getColumn();
+			final int columnEnd = label.getColumn() + label.getLength();
+			final Range range = new Range(new Position(line, column), new Position(line, columnEnd));
+			final Location location = new Location(pLModel.getUri(), range);
+			si.setLocation(location);
+			list.add(si);
+		}
 	}
 }
