@@ -20,6 +20,9 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import de.holzem.ls.language.testutils.TestResource;
@@ -36,8 +39,12 @@ class LParserTest
 		final String testResourceContent = TestResource.getContent(uri);
 		final LModel lModel = LParser.INSTANCE.parse(uri, testResourceContent);
 		assertThat(lModel.getText(), is(equalTo(testResourceContent)));
-		assertThat(lModel.getVariables(), contains("info", "infoSum"));
-		assertThat(lModel.getVariables().size(), is(equalTo(2)));
+		final List<String> variableTexts = new ArrayList<String>();
+		for (final LToken variable : lModel.getVariables()) {
+			variableTexts.add(variable.getText());
+		}
+		assertThat(variableTexts, contains("info", "infoSum"));
+		assertThat(variableTexts.size(), is(equalTo(2)));
 	}
 
 	@Test

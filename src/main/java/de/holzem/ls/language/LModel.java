@@ -37,7 +37,7 @@ public final class LModel
 {
 	private final String uri;
 	private final List<LToken> tokens;
-	private final List<String> variables;
+	private final List<LToken> variables;
 	private final List<LToken> labels;
 	private final CancelChecker cancelChecker;
 
@@ -51,7 +51,7 @@ public final class LModel
 	{
 		try {
 			// remove "/file:///" from uri
-			final String filePath = uri.startsWith("/file:///") ? uri.substring(8) : uri;
+			final String filePath = uri.startsWith("file:///") ? uri.substring(8) : uri;
 			final Path path = Paths.get(filePath);
 			return path.getFileName().toString();
 		} catch (final InvalidPathException exc) {

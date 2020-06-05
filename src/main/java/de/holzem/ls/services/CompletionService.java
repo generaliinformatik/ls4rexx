@@ -82,14 +82,19 @@ public class CompletionService extends LService
 	{
 		final LToken token = pLModel.getToken(pTokenPosition);
 		final String tokenText = token.getText();
-		for (final String variable : pLModel.getVariables()) {
-			if (variable.startsWith(tokenText)) {
-				if (!Objects.equals(variable, tokenText)) {
-					final CompletionItem completionItem = new CompletionItem(variable);
-					completionItem.setKind(CompletionItemKind.Variable);
-					completionItem.setInsertText(variable);
-					completionItem.setDetail("Variable " + variable);
-					pCompletionItems.add(completionItem);
+		for (final LToken variable : pLModel.getVariables()) {
+			// take only variables found before the current token
+			if (variable.getCharBegin() < token.getCharBegin()) {
+				final String variableText = variable.getText();
+				// take only variables with a similar text
+				if (variableText.startsWith(tokenText)) {
+					if (!Objects.equals(variableText, tokenText)) {
+						final CompletionItem completionItem = new CompletionItem(variableText);
+						completionItem.setKind(CompletionItemKind.Variable);
+						completionItem.setInsertText(variableText);
+						completionItem.setDetail("Variable " + variable);
+						pCompletionItems.add(completionItem);
+					}
 				}
 			}
 		}

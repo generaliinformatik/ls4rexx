@@ -16,8 +16,10 @@
 package de.holzem.ls.language;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -25,28 +27,42 @@ import java.util.Set;
  */
 class LParserHandler
 {
-	Set<String> _registeredVariables = new HashSet<String>();
-	Set<String> _registeredLabels = new HashSet<String>();
-	List<String> _variables = new ArrayList<String>();
-	List<LToken> _labels = new ArrayList<LToken>();
+	private static final List<String> PARSE_SUBKEYWORDS = Arrays.asList("arg", "value", "source", "with");
+	private final Set<String> _registeredVariables = new HashSet<String>();
+	private final Set<String> _registeredLabels = new HashSet<String>();
+	private final List<LToken> _variables = new ArrayList<LToken>();
+	private final List<LToken> _labels = new ArrayList<LToken>();
+	private boolean _inParseStatement = false;
 
 	void handleKeyword(final LToken pPrevToken, final LToken pCurrentToken, final LToken pNextToken)
 	{
+		final String keyword = pCurrentToken.getText().toLowerCase();
+		if (Objects.equals("parse", keyword)) {
+			_inParseStatement = true;
+		} else if (_inParseStatement) {
+			if (!PARSE_SUBKEYWORDS.contains(keyword)) {
+				_inParseStatement = false;
+			}
+		}
 	}
 
 	void handleIdentifier(final LToken pPrevToken, final LToken pCurrentToken, final LToken pNextToken)
 	{
-		final LTokenType prevTokenType = (pPrevToken != null ? pPrevToken.getType() : null);
 		final LTokenType nextTokenType = (pNextToken != null ? pNextToken.getType() : null);
-		final boolean isNextColon = (nextTokenType == LTokenType.COLON);
-		final boolean isNextLeftParen = (nextTokenType == LTokenType.LEFT_PARENTHESIS);
-		final boolean isPrevCall = (prevTokenType == LTokenType.KEYWORD
-				&& pPrevToken.getText().toLowerCase().contentEquals("call"));
-		if (!isNextColon && !isPrevCall && !isNextLeftParen) {
+		final boolean isNextEqual = (nextTokenType == LTokenType.EQ);
+		if (isNextEqual) {
 			final String tokenText = pCurrentToken.getText();
 			final String tokenTextLowerCase = tokenText.toLowerCase();
 			if (!_registeredVariables.contains(tokenTextLowerCase)) {
-				_variables.add(tokenText);
+				_variables.add(pCurrentToken);
+				_registeredVariables.add(tokenTextLowerCase);
+			}
+		}
+		if (_inParseStatement) {
+			final String tokenText = pCurrentToken.getText();
+			final String tokenTextLowerCase = tokenText.toLowerCase();
+			if (!_registeredVariables.contains(tokenTextLowerCase) && !PARSE_SUBKEYWORDS.contains(tokenTextLowerCase)) {
+				_variables.add(pCurrentToken);
 				_registeredVariables.add(tokenTextLowerCase);
 			}
 		}
@@ -62,9 +78,9 @@ class LParserHandler
 		}
 	}
 
-	List<String> getVariables()
+	List<LToken> getVariables()
 	{
-		_variables.sort((s1, s2) -> s1.compareToIgnoreCase(s2));
+		_variables.sort((s1, s2) -> s1.getText().compareToIgnoreCase(s2.getText()));
 		return _variables;
 	}
 
