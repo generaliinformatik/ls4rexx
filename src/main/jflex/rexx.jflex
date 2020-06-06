@@ -16,7 +16,7 @@
 package de.holzem.ls.language;
 
 import static de.holzem.ls.language.LTokenType.*;
-import static de.holzem.ls.language.LError.*;
+import static de.holzem.ls.language.LErrorType.*;
 
 %%
 
@@ -40,17 +40,35 @@ import static de.holzem.ls.language.LError.*;
     LToken nextToken = null;
     do {
       nextToken = nextToken();
-    } while (nextToken != null && (nextToken.getType() == COMMENT || nextToken.getType() == WHITESPACE));
+    } while (nextToken != null && (nextToken.getType() == COMMENT || nextToken.getType() == COMMENT_UNCLOSED || nextToken.getType() == WHITESPACE));
     return nextToken;
+  }
+  
+  /**
+   * Resumes scanning until the next regular expression is matched, the end of input is encountered
+   * or an I/O-Error occurs. In addition to yylex this method caters for unclosed comments.
+   *
+   * @return the next token.
+   * @exception java.io.IOException if any I/O-Error occurs.
+   */
+  public LToken nextToken() throws java.io.IOException
+  {
+    LToken token = yylex();
+    if (token == null && yyatEOF() && yystate() == COMMENT_STATE) {
+      yybegin(YYINITIAL);
+      token = new LToken(COMMENT_UNCLOSED, _commentText.toString(), _commentLine, _commentColumn, _commentChar);
+      addError(E_UNCLOSED_COMMENT, token);
+    }
+    return token;
   }
 
   private LErrors _lErrors = new LErrors();
 
-  private void addError(LError pLError) {
-    _lErrors.addError(pLError);
+  private void addError(LErrorType pLErrorType, LToken pLToken) {
+    _lErrors.addError(pLErrorType, pLToken);
   }
 
-  public LErrors getLErrors() {
+  public LErrors getErrors() {
     return _lErrors;
   }
 %}
@@ -66,7 +84,6 @@ import static de.holzem.ls.language.LError.*;
 
 %class LLexer
 %type LToken
-%function nextToken
 
 /*
 ** for debugging purposes
@@ -253,13 +270,20 @@ IDENT = {ALPHA}(\.|{ALPHA}|{DIGIT})*
 
   "/*" { yybegin(COMMENT_STATE); _commentLine = yyline; _commentColumn = yycolumn; _commentChar = yychar; _commentText = new StringBuilder("/*"); _commentCount++; }
 
+  "*/" {
+    LToken token = new LToken(ILLEGAL,yytext(),yyline,yycolumn,yychar);
+    addError(E_UNMATCHED_ENDCOMMENT, token);
+    return token;
+  }
+
   \"{DQUOTE_STRING_TEXT}\" {
     return (new LToken(DQUOTE_STRING,yytext(),yyline,yycolumn,yychar));
   }
 
   \"{DQUOTE_STRING_TEXT} {
-    addError(E_UNCLOSED_STRING);
-    return (new LToken(DQUOTE_STRING_UNCLOSED,yytext(),yyline,yycolumn,yychar));
+    LToken token = new LToken(DQUOTE_STRING_UNCLOSED,yytext(),yyline,yycolumn,yychar);
+    addError(E_UNCLOSED_STRING, token);
+    return token;
   }
 
   '{SQUOTE_STRING_TEXT}' {
@@ -267,8 +291,9 @@ IDENT = {ALPHA}(\.|{ALPHA}|{DIGIT})*
   }
 
   '{SQUOTE_STRING_TEXT} {
-    addError(E_UNCLOSED_STRING);
-    return (new LToken(SQUOTE_STRING_UNCLOSED,yytext(),yyline,yycolumn,yychar));
+    LToken token = new LToken(SQUOTE_STRING_UNCLOSED,yytext(),yyline,yycolumn,yychar);
+    addError(E_UNCLOSED_STRING, token);
+    return token;
   }
 
   {DIGIT}+ { return (new LToken(NUMBER,yytext(),yyline,yycolumn,yychar)); }
@@ -291,6 +316,8 @@ IDENT = {ALPHA}(\.|{ALPHA}|{DIGIT})*
 
 . {
   System.out.println("Illegal character: <" + yytext() + "> at (" + yyline + "," + yycolumn + ")");
-	addError(E_ILLEGAL_CHAR);
-}
+    LToken token = new LToken(ILLEGAL,yytext(),yyline,yycolumn,yychar); 
+	addError(E_ILLEGAL_CHAR, token);
+	return token; 
+  }
 

@@ -14,7 +14,6 @@
 package de.holzem.ls.language;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -39,7 +38,7 @@ class LStringTest
 		assertThat(stringToken.getType(), is(equalTo(LTokenType.DQUOTE_STRING)));
 		assertThat(stringToken.getText(), is(equalTo("\"string\"")));
 		assertThat(lexer.nextToken(), is(nullValue()));
-		assertThat(lexer.getLErrors().getErrors(), is(empty()));
+		assertThat(lexer.getErrors().hasErrors(), is(false));
 	}
 
 	@Test
@@ -57,7 +56,7 @@ class LStringTest
 		assertThat(string2Token.getType(), is(equalTo(LTokenType.DQUOTE_STRING)));
 		assertThat(string2Token.getText(), is(equalTo("\"string2\"")));
 		assertThat(lexer.nextToken(), is(nullValue()));
-		assertThat(lexer.getLErrors().getErrors(), is(empty()));
+		assertThat(lexer.getErrors().hasErrors(), is(false));
 	}
 
 	@Test
@@ -69,7 +68,9 @@ class LStringTest
 		assertThat(stringToken.getType(), is(equalTo(LTokenType.DQUOTE_STRING_UNCLOSED)));
 		assertThat(stringToken.getText(), is(equalTo("\"string")));
 		assertThat(lexer.nextToken(), is(nullValue()));
-		assertThat(lexer.getLErrors().getErrors().get(0), is(equalTo(LError.E_UNCLOSED_STRING)));
+		assertThat(lexer.getErrors().hasErrors(), is(true));
+		assertThat(lexer.getErrors().getNumberOfErrors(), is(equalTo(1)));
+		assertThat(lexer.getErrors().getError(0).getErrorType(), is(equalTo(LErrorType.E_UNCLOSED_STRING)));
 	}
 
 	@Test
@@ -81,7 +82,7 @@ class LStringTest
 		assertThat(stringToken.getType(), is(equalTo(LTokenType.DQUOTE_STRING)));
 		assertThat(stringToken.getText(), is(equalTo("\"--\"\"--\"")));
 		assertThat(lexer.nextToken(), is(nullValue()));
-		assertThat(lexer.getLErrors().getErrors(), is(empty()));
+		assertThat(lexer.getErrors().hasErrors(), is(false));
 	}
 
 	@Test
@@ -93,7 +94,7 @@ class LStringTest
 		assertThat(stringToken.getType(), is(equalTo(LTokenType.SQUOTE_STRING)));
 		assertThat(stringToken.getText(), is(equalTo("'string'")));
 		assertThat(lexer.nextToken(), is(nullValue()));
-		assertThat(lexer.getLErrors().getErrors(), is(empty()));
+		assertThat(lexer.getErrors().hasErrors(), is(false));
 	}
 
 	@Test
@@ -111,7 +112,7 @@ class LStringTest
 		assertThat(string2Token.getType(), is(equalTo(LTokenType.SQUOTE_STRING)));
 		assertThat(string2Token.getText(), is(equalTo("'string2'")));
 		assertThat(lexer.nextToken(), is(nullValue()));
-		assertThat(lexer.getLErrors().getErrors(), is(empty()));
+		assertThat(lexer.getErrors().hasErrors(), is(false));
 	}
 
 	@Test
@@ -123,7 +124,9 @@ class LStringTest
 		assertThat(stringToken.getType(), is(equalTo(LTokenType.SQUOTE_STRING_UNCLOSED)));
 		assertThat(stringToken.getText(), is(equalTo("'string")));
 		assertThat(lexer.nextToken(), is(nullValue()));
-		assertThat(lexer.getLErrors().getErrors().get(0), is(equalTo(LError.E_UNCLOSED_STRING)));
+		assertThat(lexer.getErrors().hasErrors(), is(true));
+		assertThat(lexer.getErrors().getNumberOfErrors(), is(equalTo(1)));
+		assertThat(lexer.getErrors().getError(0).getErrorType(), is(equalTo(LErrorType.E_UNCLOSED_STRING)));
 	}
 
 	@Test
@@ -135,7 +138,7 @@ class LStringTest
 		assertThat(stringToken.getType(), is(equalTo(LTokenType.SQUOTE_STRING)));
 		assertThat(stringToken.getText(), is(equalTo("'--''--'")));
 		assertThat(lexer.nextToken(), is(nullValue()));
-		assertThat(lexer.getLErrors().getErrors(), is(empty()));
+		assertThat(lexer.getErrors().hasErrors(), is(false));
 	}
 
 	@Test
@@ -159,6 +162,6 @@ class LStringTest
 		assertThat(whitespaceToken3.getType(), is(equalTo(LTokenType.WHITESPACE)));
 		assertThat(whitespaceToken3.getText(), is(equalTo(" ")));
 		assertThat(lexer.nextToken(), is(nullValue()));
-		assertThat(lexer.getLErrors().getErrors(), is(empty()));
+		assertThat(lexer.getErrors().hasErrors(), is(false));
 	}
 }

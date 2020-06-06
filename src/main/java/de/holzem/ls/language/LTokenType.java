@@ -19,6 +19,7 @@ package de.holzem.ls.language;
 public enum LTokenType {
 	SYNTHETIC,
 	COMMENT,
+	COMMENT_UNCLOSED,
 	WHITESPACE,
 	COMMA,
 	COLON,
@@ -55,6 +56,6 @@ public enum LTokenType {
 	NUMBER,
 	IDENTIFIER,
 	KEYWORD,
-	FUNCTION
-
+	FUNCTION,
+	ILLEGAL
 }

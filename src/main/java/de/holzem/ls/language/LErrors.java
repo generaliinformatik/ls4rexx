@@ -14,7 +14,6 @@
 package de.holzem.ls.language;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,15 +21,32 @@ import java.util.List;
  */
 public class LErrors
 {
-	private final List<LError> _errors = new ArrayList<>();
+	private final List<LError> _errors = new ArrayList<LError>();
 
-	public void addError(final LError pLError)
+	public void addError(final LErrorType pLErrorType, final LToken pToken)
 	{
-		_errors.add(pLError);
+		final LError error = new LError(pLErrorType, pToken);
+		_errors.add(error);
 	}
 
-	public List<LError> getErrors()
+	public LError getError(final int pIndex)
 	{
-		return Collections.unmodifiableList(_errors);
+		return _errors.get(pIndex);
+	}
+
+	public int getNumberOfErrors()
+	{
+		return _errors.size();
+	}
+
+	public boolean hasErrors()
+	{
+		return (getNumberOfErrors() != 0);
+	}
+
+	@Override
+	public String toString()
+	{
+		return "LErrors [_errors=" + _errors + "]";
 	}
 }

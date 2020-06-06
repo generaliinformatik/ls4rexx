@@ -18,6 +18,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.startsWith;
 
 import java.util.List;
 
@@ -123,5 +124,37 @@ class LModelTest
 		assertThat(lModel.getTokens().get(pos_11_16).getText(), is(equalTo("infoSum")));
 		final int pos_11_17 = lModel.locateToken(11, 17);
 		assertThat(lModel.getTokens().get(pos_11_17).getType(), is(equalTo(LTokenType.WHITESPACE)));
+	}
+
+	@Test
+	void testErrors()
+	{
+		final String uri = "rexx/errors.rex";
+		final String testResourceContent = TestResource.getContent(uri);
+		final LModel lModel = LParser.INSTANCE.parse(uri, testResourceContent);
+		// Basic error informatio
+		final LErrors errors = lModel.getErrors();
+		assertThat(errors.hasErrors(), is(true));
+		assertThat(errors.getNumberOfErrors(), is(equalTo(5)));
+		// first error is unclosed string
+		final LError error1 = errors.getError(0);
+		assertThat(error1.getErrorType(), is(equalTo(LErrorType.E_ILLEGAL_CHAR)));
+		assertThat(error1.getToken().getText(), is(equalTo("{")));
+		// second error is unclosed string
+		final LError error2 = errors.getError(1);
+		assertThat(error2.getErrorType(), is(equalTo(LErrorType.E_UNMATCHED_ENDCOMMENT)));
+		assertThat(error2.getToken().getText(), is(equalTo("*/")));
+		// first error is unclosed string
+		final LError error3 = errors.getError(2);
+		assertThat(error3.getErrorType(), is(equalTo(LErrorType.E_UNCLOSED_STRING)));
+		assertThat(error3.getToken().getText(), is(equalTo("\"open string")));
+		// second error is unclosed string
+		final LError error4 = errors.getError(3);
+		assertThat(error4.getErrorType(), is(equalTo(LErrorType.E_UNCLOSED_STRING)));
+		assertThat(error4.getToken().getText(), is(equalTo("'open string")));
+		// third error is unclosed comment
+		final LError error5 = errors.getError(4);
+		assertThat(error5.getErrorType(), is(equalTo(LErrorType.E_UNCLOSED_COMMENT)));
+		assertThat(error5.getToken().getText(), startsWith("/* comment without end"));
 	}
 }

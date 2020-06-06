@@ -13,23 +13,16 @@
  */
 package de.holzem.ls.language;
 
+import lombok.AllArgsConstructor;
+import lombok.Value;
+
 /**
  * LError
  */
-public enum LError
+@Value
+@AllArgsConstructor
+public class LError
 {
-	E_UNMATCHED_ENDCOMMENT("Unmatched end-of-comment punctuation"),
-	E_UNMATCHED_STARTCOMMENT("Unmatched start-of-comment punctuation"), E_UNCLOSED_STRING("Unclosed string"),
-	E_ILLEGAL_CHAR("Illegal character");
-
-	private String _message;
-
-	private LError(final String pMessage) {
-		_message = pMessage;
-	}
-
-	public String getMessage()
-	{
-		return _message;
-	}
+	private LErrorType errorType;
+	private LToken token;
 }

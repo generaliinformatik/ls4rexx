@@ -39,6 +39,7 @@ public final class LModel
 	private final List<LToken> variables;
 	private final List<LToken> labels;
 	private final CancelChecker cancelChecker;
+	private final LErrors errors;
 
 	public String getText()
 	{

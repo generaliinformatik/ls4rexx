@@ -85,7 +85,7 @@ public enum LParser
 			}
 		}
 		final LModel lModel = new LModel.LModelBuilder().uri(pUri).tokens(tokens).variables(handler.getVariables())
-				.labels(handler.getLabels()).cancelChecker(pCancelChecker).build();
+				.labels(handler.getLabels()).cancelChecker(pCancelChecker).errors(lexer.getErrors()).build();
 		log.debug("parsing done {}: {} variables, {} labels", pUri, handler.getVariables().size(),
 				handler.getLabels().size());
 		return lModel;

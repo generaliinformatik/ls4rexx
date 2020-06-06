@@ -14,7 +14,6 @@
 package de.holzem.ls.language;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -58,14 +57,14 @@ class LOperatorTest
 		assertThat(stringToken.getType(), is(equalTo(LTokenType.CONCAT)));
 		assertThat(stringToken.getText(), is(equalTo("!!")));
 		assertThat(lexer.nextRealToken(), is(nullValue()));
-		assertThat(lexer.getLErrors().getErrors(), is(empty()));
+		assertThat(lexer.getErrors().hasErrors(), is(false));
 	}
 
 	@Test
 	void testMathOperators() throws IOException
 	{
 		final LLexer lexer = new LLexerBuilder() //
-				.add("+-*///%").build();
+				.add("+ - * // / %").build();
 		LToken stringToken;
 		stringToken = lexer.nextRealToken();
 		assertThat(stringToken.getType(), is(equalTo(LTokenType.PLUS)));
@@ -86,7 +85,7 @@ class LOperatorTest
 		assertThat(stringToken.getType(), is(equalTo(LTokenType.DIVIDE_REMAINDER)));
 		assertThat(stringToken.getText(), is(equalTo("%")));
 		assertThat(lexer.nextRealToken(), is(nullValue()));
-		assertThat(lexer.getLErrors().getErrors(), is(empty()));
+		assertThat(lexer.getErrors().hasErrors(), is(false));
 	}
 
 	@Test
@@ -120,7 +119,7 @@ class LOperatorTest
 		assertThat(stringToken.getType(), is(equalTo(LTokenType.GE)));
 		assertThat(stringToken.getText(), is(equalTo(">=")));
 		assertThat(lexer.nextRealToken(), is(nullValue()));
-		assertThat(lexer.getLErrors().getErrors(), is(empty()));
+		assertThat(lexer.getErrors().hasErrors(), is(false));
 	}
 
 	@Test
@@ -148,7 +147,7 @@ class LOperatorTest
 		assertThat(stringToken.getType(), is(equalTo(LTokenType.STRICT_GE)));
 		assertThat(stringToken.getText(), is(equalTo(">>=")));
 		assertThat(lexer.nextRealToken(), is(nullValue()));
-		assertThat(lexer.getLErrors().getErrors(), is(empty()));
+		assertThat(lexer.getErrors().hasErrors(), is(false));
 	}
 
 	@Test
@@ -167,6 +166,6 @@ class LOperatorTest
 		assertThat(stringToken.getType(), is(equalTo(LTokenType.NOT)));
 		assertThat(stringToken.getText(), is(equalTo("^")));
 		assertThat(lexer.nextRealToken(), is(nullValue()));
-		assertThat(lexer.getLErrors().getErrors(), is(empty()));
+		assertThat(lexer.getErrors().hasErrors(), is(false));
 	}
 }

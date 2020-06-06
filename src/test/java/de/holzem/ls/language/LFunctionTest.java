@@ -14,7 +14,6 @@
 package de.holzem.ls.language;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -45,6 +44,6 @@ class LFunctionTest
 		assertThat(stringToken.getType(), is(equalTo(LTokenType.IDENTIFIER)));
 		assertThat(stringToken.getText(), is(equalTo("identifier")));
 		assertThat(lexer.nextRealToken(), is(nullValue()));
-		assertThat(lexer.getLErrors().getErrors(), is(empty()));
+		assertThat(lexer.getErrors().hasErrors(), is(false));
 	}
 }
