@@ -1,17 +1,18 @@
 /**
- * Copyright 2020 Markus Holzem
+ *  Copyright (c) 2018 Angelo ZERR.
+ *  All rights reserved. This program and the accompanying materials
+ *  are made available under the terms of the Eclipse Public License v2.0
+ *  which accompanies this distribution, and is available at
+ *  http://www.eclipse.org/legal/epl-v20.html
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * SPDX-License-Identifier: EPL-2.0
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *  Contributors:
+ *  Angelo Zerr <angelo.zerr@gmail.com> - initial API and implementation
+ *  Markus Holzem <markus@holzem.de> - async processing of model
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *  Originated from
+ *  https://github.com/angelozerr/lemminx/blob/master/org.eclipse.lemminx/src/main/java/org/eclipse/lemminx/commons/TextDocument.java
  */
 package de.holzem.ls.documents;
 
@@ -76,7 +77,7 @@ public class LDocumentItem extends TextDocumentItem
 
 	/**
 	 * Create a {@link CompletableFuture} of the {@link LModel} for this LDocumentItem
-	 * 
+	 *
 	 * @return the {@link CompletableFuture} fo the {@link LModel}
 	 */
 	private CompletableFuture<LModel> getModel()

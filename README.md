@@ -52,7 +52,7 @@ Currently there is only the following client available:
 
 # Licenses
 
-ls4rexx is published under the Apache 2.0 License
+ls4rexx is published under the Eclipse Public License 2.0
 
 # Building and Contributing
 

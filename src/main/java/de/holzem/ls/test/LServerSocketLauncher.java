@@ -1,23 +1,16 @@
 /**
- * Copyright 2020 Markus Holzem
+ *  Copyright (c) 2018 TypeFox GmbH (http://www.typefox.io) and others.
+ *  All rights reserved. This program and the accompanying materials
+ *  are made available under the terms of the Eclipse Public License v2.0
+ *  which accompanies this distribution, and is available at
+ *  http://www.eclipse.org/legal/epl-v20.html
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * SPDX-License-Identifier: EPL-2.0
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *  @author Dennis Huebner <dennis.huebner@gmail.com> - Initial contribution and API
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * SocketLauncher for Debugging copied from
- * https://github.com/angelozerr/lemminx/blob/master/org.eclipse.lemminx/src/main/java/org/eclipse/lemminx/XMLServerSocketLauncher.java
- * released under Eclipse Public License v2.0 http://www.eclipse.org/legal/epl-v20.html
- *
- * @author Dennis Huebner <dennis.huebner@gmail.com> - Initial contribution and API
+ *  Originated from
+ *  https://github.com/angelozerr/lemminx/blob/master/org.eclipse.lemminx/src/main/java/org/eclipse/lemminx/XMLServerSocketLauncher.java
  */
 package de.holzem.ls.test;
 
@@ -37,17 +30,15 @@ import org.eclipse.lsp4j.services.LanguageClient;
 
 import de.holzem.ls.LServer;
 
-public class LServerSocketLauncher {
-
+public class LServerSocketLauncher
+{
 	private static final int DEFAULT_PORT = 5_008;
 
 	/**
 	 * Calls {@link #launch(String[])}
 	 *
-	 * @param args
-	 *            standard launch arguments. may contain <code>--port</code> argument to change the default port 5008
-	 * @throws Exception
-	 *             any communication exception
+	 * @param args standard launch arguments. may contain <code>--port</code> argument to change the default port 5008
+	 * @throws Exception any communication exception
 	 */
 	public static void main(final String[] args) throws Exception
 	{
@@ -55,13 +46,11 @@ public class LServerSocketLauncher {
 	}
 
 	/**
-	 * Launches {@link LServer} using asynchronous server-socket channel and makes it accessible through the
-	 * JSON RPC protocol defined by the LSP.
+	 * Launches {@link LServer} using asynchronous server-socket channel and makes it accessible through the JSON RPC
+	 * protocol defined by the LSP.
 	 *
-	 * @param args
-	 *            standard launch arguments. may contain <code>--port</code> argument to change the default port 5008
-	 * @throws Exception
-	 *             any communication exception
+	 * @param args standard launch arguments. may contain <code>--port</code> argument to change the default port 5008
+	 * @throws Exception any communication exception
 	 */
 	public void launch(final String[] args) throws Exception
 	{
