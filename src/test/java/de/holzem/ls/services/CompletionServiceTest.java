@@ -51,11 +51,11 @@ class CompletionServiceTest
 				new Position(7, 7) // var3 defined on line before
 		};
 		final String[][] varlist = { //
-				{}, //
-				{}, //
-				{ "var1" }, //
-				{ "var1", "var2" }, //
-				{ "var1", "var2", "var3" } //
+				{}, // completion in comment
+				{ "var1", "var2", "var3" }, // show all variables anyway
+				{ "var1", "var2", "var3" }, // show all variables anyway
+				{ "var1", "var2", "var3" }, // show all variables anyway
+				{ "var1", "var2", "var3" } // show all variables anyway
 		};
 		for (int i = 0; i < testpositions.length; ++i) {
 			final Position position = testpositions[i];

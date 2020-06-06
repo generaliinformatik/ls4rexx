@@ -64,10 +64,11 @@ public class LServerSocketLauncher
 			final OutputStream out = Channels.newOutputStream(socketChannel);
 			final ExecutorService executorService = Executors.newCachedThreadPool();
 			final LServer languageServer = new LServer();
-			final Launcher<LanguageClient> launcher = Launcher.createIoLauncher(languageServer, LanguageClient.class,
-					in, out, executorService, (final MessageConsumer it) -> {
-						return it;
-					});
+			final Launcher<LanguageClient> launcher //
+					= Launcher.createIoLauncher(languageServer, LanguageClient.class, in, out, executorService,
+							(final MessageConsumer it) -> {
+								return it;
+							});
 			languageServer.connect(launcher.getRemoteProxy());
 			launcher.startListening();
 		}

@@ -53,10 +53,13 @@ public class CompletionService extends LService
 		final int tokenPosition = getTokenPosition(pLModel, line, column);
 		log.debug("match with token {}", pLModel.getToken(tokenPosition));
 		final List<CompletionItem> completionItems = new ArrayList<>();
-		addVariablesToCompletions(pLModel, tokenPosition, completionItems);
-		addLabelsToCompletions(pLModel, tokenPosition, completionItems);
-		addFunctionsToCompletions(pLModel, tokenPosition, completionItems);
-		// addKeywordsToCompletions(pLModel, tokenPosition, completionItems);
+		final boolean isComment = (pLModel.getToken(tokenPosition).getType() == LTokenType.COMMENT);
+		if (!isComment) {
+			addVariablesToCompletions(pLModel, tokenPosition, completionItems);
+			addLabelsToCompletions(pLModel, tokenPosition, completionItems);
+			addKeywordsToCompletions(pLModel, tokenPosition, completionItems);
+			addFunctionsToCompletions(pLModel, tokenPosition, completionItems);
+		}
 		final CompletionList completionList = new CompletionList();
 		completionList.setIsIncomplete(true);
 		completionList.setItems(completionItems);
@@ -80,21 +83,23 @@ public class CompletionService extends LService
 	{
 		final LToken token = pLModel.getToken(pTokenPosition);
 		final String tokenText = token.getText();
+		final boolean isLikeWhitespace = (token.getType() == LTokenType.LEFT_PARENTHESIS
+				|| token.getType() == LTokenType.WHITESPACE);
 		for (final LToken variable : pLModel.getVariables()) {
 			// take only variables found before the current token
-			if (variable.getCharBegin() < token.getCharBegin()) {
-				final String variableText = variable.getText();
-				// take only variables with a similar text
-				if (variableText.startsWith(tokenText)) {
-					if (!Objects.equals(variableText, tokenText)) {
-						final CompletionItem completionItem = new CompletionItem(variableText);
-						completionItem.setKind(CompletionItemKind.Variable);
-						completionItem.setInsertText(variableText);
-						completionItem.setDetail("Variable " + variable);
-						pCompletionItems.add(completionItem);
-					}
+			// commented out if (variable.getCharBegin() < token.getCharBegin()) {
+			final String variableText = variable.getText();
+			// take only variables with a similar text
+			if (isLikeWhitespace || variableText.startsWith(tokenText)) {
+				if (!Objects.equals(variableText, tokenText)) {
+					final CompletionItem completionItem = new CompletionItem(variableText);
+					completionItem.setKind(CompletionItemKind.Variable);
+					completionItem.setInsertText(variableText);
+					completionItem.setDetail("Variable " + variable);
+					pCompletionItems.add(completionItem);
 				}
 			}
+			// commented out}
 		}
 	}
 

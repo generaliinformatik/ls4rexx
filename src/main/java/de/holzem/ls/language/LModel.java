@@ -33,6 +33,7 @@ import lombok.Value;
 @Builder
 public final class LModel
 {
+	private static final LToken NULL_TOKEN = new LToken(LTokenType.COMMENT, "", 0, 0, 0);
 	private final String uri;
 	private final List<LToken> tokens;
 	private final List<LToken> variables;
@@ -59,6 +60,9 @@ public final class LModel
 
 	public LToken getToken(final int pIndex)
 	{
+		if (pIndex < 0 || pIndex > tokens.size() - 1) {
+			return NULL_TOKEN;
+		}
 		return tokens.get(pIndex);
 	}
 
@@ -75,6 +79,14 @@ public final class LModel
 	public int locatePrevToken(final int pLine, final int pColumn)
 	{
 		int position = locateToken(pLine, pColumn);
+		// if found token is a comment do not look any further
+		final LTokenType tokenType = getToken(position).getType();
+		if (tokenType == LTokenType.COMMENT || tokenType == LTokenType.DQUOTE_STRING
+				|| tokenType == LTokenType.DQUOTE_STRING_UNCLOSED || tokenType == LTokenType.SQUOTE_STRING
+				|| tokenType == LTokenType.SQUOTE_STRING_UNCLOSED) {
+			return position;
+		}
+		// take previous token
 		return (position > 0 ? --position : position);
 	}
 

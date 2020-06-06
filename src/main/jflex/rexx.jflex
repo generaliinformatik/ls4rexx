@@ -81,7 +81,7 @@ NEWLINE=\r|\n|\r\n
 WHITE_SPACE_CHAR=[\n\r\ \b\012]
 DQUOTE_STRING_TEXT=(\"\"|[^\n\r\"]|\\{WHITE_SPACE_CHAR}+\\)*
 SQUOTE_STRING_TEXT=(''|[^\n\r']|\\{WHITE_SPACE_CHAR}+\\)*
-COMMENT_TEXT=([^*/\n]|[^*\n]"/"[^*\n]|[^/*]"*"[^/]|"*"[^/\n]|"/"[^*\n])+
+COMMENT_TEXT=([^*/\n\r]|([*][^/]))+
 IDENT = {ALPHA}(\.|{ALPHA}|{DIGIT})*
 
 %%
@@ -284,6 +284,7 @@ IDENT = {ALPHA}(\.|{ALPHA}|{DIGIT})*
 <COMMENT_STATE> {
   "/*"           { _commentCount++; _commentText.append(yytext()); }
   "*/"           { _commentText.append(yytext()); if (--_commentCount == 0) { yybegin(YYINITIAL); return (new LToken(COMMENT,_commentText.toString(),_commentLine,_commentColumn,_commentChar)); } }
+  "/"            { _commentText.append(yytext()); if (_commentText.toString().endsWith("*/")) { if (--_commentCount == 0) { yybegin(YYINITIAL); return (new LToken(COMMENT,_commentText.toString(),_commentLine,_commentColumn,_commentChar)); } } }
   {COMMENT_TEXT} { _commentText.append(yytext()); }
   {NEWLINE}      { _commentText.append(yytext()); }
 }

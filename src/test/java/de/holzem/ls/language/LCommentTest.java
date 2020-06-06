@@ -101,6 +101,25 @@ class LCommentTest
 	void testCommentWithStar() throws IOException
 	{
 		final LLexer lexer = new LLexerBuilder() //
+				.addln("/*REXX*****************************************************************") //
+				.addln("*") //
+				.addln("* REXX-Name")//
+				.addln("*") //
+				.add("**********************************************************************/") //
+				.build();
+		LToken token;
+		token = lexer.nextToken();
+		assertThat(token.getType(), is(equalTo(LTokenType.COMMENT)));
+		assertThat(token.getText(), is(equalTo(
+				"/*REXX*****************************************************************\r\n*\r\n* REXX-Name\r\n*\r\n**********************************************************************/")));
+		assertThat(lexer.nextToken(), is(nullValue()));
+		assertThat(lexer.getLErrors().getErrors(), is(empty()));
+	}
+
+	@Test
+	void testCommentWithStar2() throws IOException
+	{
+		final LLexer lexer = new LLexerBuilder() //
 				.addln("/*REXX******************************************************************") //
 				.addln("*") //
 				.addln("* REXX-Name")//
