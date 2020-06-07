@@ -72,4 +72,45 @@ class CompletionServiceTest
 			}
 		}
 	}
+
+	@Test
+	void testCompletionVariablesStems()
+	{
+		final String uri = "rexx/completion-service-variables-stems.rex";
+		final String testResourceContent = TestResource.getContent(uri);
+		final LModel lModel = LParser.INSTANCE.parse(uri, testResourceContent);
+		final LServices services = new LServices(new ServerCapabilities());
+		final Position[] testpositions = { //
+				new Position(9, 3), //
+				new Position(10, 5), //
+				new Position(11, 6), //
+				new Position(12, 9), //
+				new Position(13, 10), //
+		};
+		final String[][] varlist = { //
+				{ "stem.", "stem.0", "stem.cnt.", "stem.cnt.city", "stem.cnt.firstname", "stem.cnt.lastname",
+						"stem.cnt.postcode", "stem.cnt.street" }, //
+				{ "stem.0", "stem.cnt.", "stem.cnt.city", "stem.cnt.firstname", "stem.cnt.lastname",
+						"stem.cnt.postcode", "stem.cnt.street" }, //
+				{ "stem.cnt.", "stem.cnt.city", "stem.cnt.firstname", "stem.cnt.lastname", "stem.cnt.postcode",
+						"stem.cnt.street" }, //
+				{ "stem.cnt.city", "stem.cnt.firstname", "stem.cnt.lastname", "stem.cnt.postcode", "stem.cnt.street" }, // completion
+				{ "stem.cnt.firstname" }, //
+		};
+		for (int i = 0; i < testpositions.length; ++i) {
+			final Position position = testpositions[i];
+			final CompletionList list = services.doComplete(null, lModel, position);
+			final List<CompletionItem> items = list.getItems();
+			final List<String> foundlist = new ArrayList<String>();
+			for (final CompletionItem item : items) {
+				foundlist.add(item.getInsertText());
+			}
+			System.out.println(foundlist);
+			if (varlist[i].length == 0) {
+				assertThat(foundlist, is(empty()));
+			} else {
+				assertThat(foundlist, contains(varlist[i]));
+			}
+		}
+	}
 }

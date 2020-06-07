@@ -64,7 +64,8 @@ public class DocumentSymbolService extends LService
 			final List<SymbolInformation> list)
 	{
 		for (final LToken label : pLModel.getLabels()) {
-			pCancelChecker.checkCanceled();
+			if (pCancelChecker != null)
+				pCancelChecker.checkCanceled();
 			final SymbolInformation si = new SymbolInformation();
 			si.setKind(SymbolKind.Method);
 			si.setName(label.getText());

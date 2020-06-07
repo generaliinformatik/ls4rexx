@@ -315,7 +315,7 @@ IDENT = {ALPHA}(\.|{ALPHA}|{DIGIT})*
 }
 
 . {
-  System.out.println("Illegal character: <" + yytext() + "> at (" + yyline + "," + yycolumn + ")");
+    /*System.out.println("Illegal character: <" + yytext() + "> at (" + yyline + "," + yycolumn + ")");*/
     LToken token = new LToken(ILLEGAL,yytext(),yyline,yycolumn,yychar); 
 	addError(E_ILLEGAL_CHAR, token);
 	return token; 
