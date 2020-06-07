@@ -48,6 +48,7 @@ import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.WorkspaceEdit;
 import org.eclipse.lsp4j.jsonrpc.CancelChecker;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
+import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.TextDocumentService;
 
 import de.holzem.ls.LServer;
@@ -79,8 +80,8 @@ public class LTextDocumentService implements TextDocumentService
 		log("completion", textDocumentIdentifier, position);
 		return computeResultAsync(textDocumentIdentifier, //
 				// BiFunction taking a CancelChecker and a LModel to create a CompletionList
-				(cancelChecker, lModel) -> {
-					final CompletionList list = getLServices().doComplete(cancelChecker, lModel, position);
+				(cancelChecker, model) -> {
+					final CompletionList list = getServices().doComplete(cancelChecker, model, position);
 					return Either.forRight(list);
 				});
 	}
@@ -131,8 +132,8 @@ public class LTextDocumentService implements TextDocumentService
 		log("documentSymbol", textDocumentIdentifier);
 		return computeResultAsync(textDocumentIdentifier, //
 				// BiFunction taking a CancelChecker and a LModel to create a list with SymbolInformation
-				(cancelChecker, lModel) -> {
-					final List<SymbolInformation> list = getLServices().doDocumentSymbol(cancelChecker, lModel);
+				(cancelChecker, model) -> {
+					final List<SymbolInformation> list = getServices().doDocumentSymbol(cancelChecker, model);
 					return list;
 				});
 	}
@@ -206,6 +207,7 @@ public class LTextDocumentService implements TextDocumentService
 		final TextDocumentIdentifier textDocumentIdentifier = didCloseTextDocumentParams.getTextDocument();
 		log("close", textDocumentIdentifier);
 		_lDocuments.onDidCloseTextDocument(didCloseTextDocumentParams);
+		getServices().cleanDiagnostics(getLanguageClient(), textDocumentIdentifier);
 	}
 
 	@Override
@@ -220,7 +222,7 @@ public class LTextDocumentService implements TextDocumentService
 		log("validate", pLModel);
 		final CancelChecker cancelChecker = pLModel.getCancelChecker();
 		cancelChecker.checkCanceled();
-		// TODO publish diagnostics
+		getServices().publishDiagnostics(getLanguageClient(), cancelChecker, pLModel);
 	}
 	// ------------------------------------------------------------------------
 	// convenience methods
@@ -241,9 +243,14 @@ public class LTextDocumentService implements TextDocumentService
 		return lDocumentItem.computeResultAsync(pComputeResultBiFunction);
 	}
 
-	private LServices getLServices()
+	private LServices getServices()
 	{
 		return _lServer.getLServices();
+	}
+
+	private LanguageClient getLanguageClient()
+	{
+		return _lServer.getLanguageClient();
 	}
 
 	private static void log(final String pFunction, final TextDocumentIdentifier pTextDocumentIdentifier,

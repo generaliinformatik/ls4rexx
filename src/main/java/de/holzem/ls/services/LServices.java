@@ -19,8 +19,10 @@ import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.ServerCapabilities;
 import org.eclipse.lsp4j.SymbolInformation;
+import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.TextDocumentSyncKind;
 import org.eclipse.lsp4j.jsonrpc.CancelChecker;
+import org.eclipse.lsp4j.services.LanguageClient;
 
 import de.holzem.ls.language.LModel;
 
@@ -31,11 +33,13 @@ public class LServices
 {
 	private final CompletionService _completionService;
 	private final DocumentSymbolService _documentSymbolService;
+	private final PublishDiagnosticsService _publishDiagnosticsService;
 
 	public LServices(final ServerCapabilities pServerCapabilities) {
 		pServerCapabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
 		_completionService = new CompletionService(this, pServerCapabilities);
 		_documentSymbolService = new DocumentSymbolService(this, pServerCapabilities);
+		_publishDiagnosticsService = new PublishDiagnosticsService(this, pServerCapabilities);
 	}
 
 	public CompletionList doComplete(final CancelChecker pCancelChecker, final LModel pLModel, final Position pPosition)
@@ -46,5 +50,17 @@ public class LServices
 	public List<SymbolInformation> doDocumentSymbol(final CancelChecker pCancelChecker, final LModel pLModel)
 	{
 		return _documentSymbolService.doDocumentSymbol(pCancelChecker, pLModel);
+	}
+
+	public void publishDiagnostics(final LanguageClient pLanguageClient, final CancelChecker pCancelChecker,
+			final LModel pLModel)
+	{
+		_publishDiagnosticsService.publishDiagnostics(pLanguageClient, pCancelChecker, pLModel);
+	}
+
+	public void cleanDiagnostics(final LanguageClient pLanguageClient,
+			final TextDocumentIdentifier pTextDocumentIdentifier)
+	{
+		_publishDiagnosticsService.publishCleanDiagnostics(pLanguageClient, pTextDocumentIdentifier);
 	}
 }

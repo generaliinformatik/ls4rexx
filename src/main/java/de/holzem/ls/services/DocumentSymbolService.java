@@ -45,7 +45,7 @@ public class DocumentSymbolService extends LService
 	{
 		final List<SymbolInformation> list = new ArrayList<SymbolInformation>();
 		addFileName(pLModel, list);
-		addMethods(pLModel, list);
+		addMethods(pCancelChecker, pLModel, list);
 		return list;
 	}
 
@@ -60,9 +60,11 @@ public class DocumentSymbolService extends LService
 		list.add(si);
 	}
 
-	private void addMethods(final LModel pLModel, final List<SymbolInformation> list)
+	private void addMethods(final CancelChecker pCancelChecker, final LModel pLModel,
+			final List<SymbolInformation> list)
 	{
 		for (final LToken label : pLModel.getLabels()) {
+			pCancelChecker.checkCanceled();
 			final SymbolInformation si = new SymbolInformation();
 			si.setKind(SymbolKind.Method);
 			si.setName(label.getText());

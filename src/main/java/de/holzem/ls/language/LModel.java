@@ -82,9 +82,13 @@ public final class LModel
 		int position = locateToken(pLine, pColumn);
 		// if found token is a comment do not look any further
 		final LTokenType tokenType = getToken(position).getType();
-		if (tokenType == LTokenType.COMMENT || tokenType == LTokenType.DQUOTE_STRING
-				|| tokenType == LTokenType.DQUOTE_STRING_UNCLOSED || tokenType == LTokenType.SQUOTE_STRING
-				|| tokenType == LTokenType.SQUOTE_STRING_UNCLOSED) {
+		if (tokenType == LTokenType.COMMENT || tokenType == LTokenType.COMMENT_UNCLOSED
+				|| tokenType == LTokenType.DQUOTE_STRING || tokenType == LTokenType.DQUOTE_STRING_UNCLOSED
+				|| tokenType == LTokenType.SQUOTE_STRING || tokenType == LTokenType.SQUOTE_STRING_UNCLOSED) {
+			return position;
+		}
+		// if the found token is the last token and not whitespace take this token
+		if (position == tokens.size() - 1 && tokenType != LTokenType.WHITESPACE) {
 			return position;
 		}
 		// take previous token
