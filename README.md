@@ -23,41 +23,56 @@ I want to give kudos to [Angelo Zerr](https://github.com/angelozerr) whose imple
 [XML Language Server (LemMinX)](https://github.com/angelozerr/lemminx) helped me to understand
 how to implement a language server using [Eclipse LSP4J](https://projects.eclipse.org/projects/technology.lsp4j).  
 
-# Features
+## Features
 
-The following features are in progress:
+### Good-Enough-Support
+
+This language server thinks more in terms of [Iron Man](https://en.wikipedia.org/wiki/Iron_Man) than of 
+[Ultron](https://en.wikipedia.org/wiki/Ultron). The idea is to support the developer while editing but not
+to provide take over the responsibility to write correct syntax. Therefore the source files are just scanned 
+but not parsed into an [abstract syntax tree](https://en.wikipedia.org/wiki/Abstract_syntax_tree). Using the 
+features should help during typing and navigating, but there is no guarantee that e.g. a completion hint will 
+be proper syntax for the current cursor position.
+
+### Convention over configuration?
+
+Currently the language support follows a certain coding style, e.g. lables/procedures are in uppercase, variables
+are in lowercase. I do not know when I will get around to make this more configurable.
+
+### Features in progress
 
 * [textDocument/completion](https://microsoft.github.io/language-server-protocol/specification#textDocument_completion).
 * [textDocument/documentSymbol](https://microsoft.github.io/language-server-protocol/specification#textDocument_documentSymbol).
+* [textDocument/publishDiagnostics](https://microsoft.github.io/language-server-protocol/specification#textDocument_publishDiagnostics).
 
-# Get started
+## Get started
 
 * Clone this repository
 * Open the folder in your terminal / command line
 * Run `./mvnw clean verify` (OSX, Linux) or `mvnw.cmd clean verify` (Windows)
 * After successful compilation you can find the resulting `ls4rexx-{version}-jar-with-dependencies.jar` in the folder `target`
 
-# Developer
+## Developer
 
 To debug ls4rexx you can use `de.holzem.ls.test.LServerSocketLauncher`:
 
 1. Run the `de.holzem.ls.test.LServerSocketLauncher` in debug mode (e.g. in eclipse)
 2. Connect your client via socket port. Default port is 5008, but you can change it with start argument `--port` in step 1
 
-# Clients
+## Clients
 
 Currently there is only the following client available:
 
 * Eclipse IDE support with [rexx4e](https://github.com/holzem/rexx4e "rexx4e")
 
-# Licenses
+## Licenses
 
 ls4rexx is published under the Eclipse Public License 2.0
 
-# Building and Contributing
+## Building and Contributing
 
 To build and contribute to ls4rexx consult the [Contributing Guilde](https://github.com/holzem/ls4rexx/blob/master/CONTRIBUTING.md)
 
-# Acknowledgements
+## Acknowledgements
 
 This projects makes use of third party projects. Refer to the [Acknowledgements Information](https://github.com/holzem/ls4rexx/blob/master/ACKNOWLEDGEMENT.md)   
