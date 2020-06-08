@@ -16,12 +16,12 @@ the developer to help with navigation and code completion.
 
 The server is based on:
 
-* [Eclipse LSP4J](https://projects.eclipse.org/projects/technology.lsp4j), the Java binding for the Language Server Protocol.
+* [Eclipse lsp4j](https://projects.eclipse.org/projects/technology.lsp4j), the Java binding for the Language Server Protocol.
 * [JFlex](https://jflex.de/), a lexical analyzer generator (also known as scanner generator) for Java, written in Java.
 
 I want to give kudos to [Angelo Zerr](https://github.com/angelozerr) whose implementation of the
 [XML Language Server (LemMinX)](https://github.com/angelozerr/lemminx) helped me to understand
-how to implement a language server using [Eclipse LSP4J](https://projects.eclipse.org/projects/technology.lsp4j).  
+how to implement a language server using [Eclipse lsp4j](https://projects.eclipse.org/projects/technology.lsp4j).  
 
 ## Features
 
@@ -36,7 +36,7 @@ be proper syntax for the current cursor position.
 
 ### Convention over configuration?
 
-Currently the language support follows a certain coding style, e.g. lables/procedures are in uppercase, variables
+Currently the language support follows a certain coding style, e.g. labels/procedures are in uppercase, variables
 are in lowercase. I do not know when I will get around to make this more configurable.
 
 ### Features in progress
@@ -44,6 +44,8 @@ are in lowercase. I do not know when I will get around to make this more configu
 * [textDocument/completion](https://microsoft.github.io/language-server-protocol/specification#textDocument_completion).
 * [textDocument/documentSymbol](https://microsoft.github.io/language-server-protocol/specification#textDocument_documentSymbol).
 * [textDocument/publishDiagnostics](https://microsoft.github.io/language-server-protocol/specification#textDocument_publishDiagnostics).
+
+My current [TODO](TODO.md) list...  
 
 ## Get started
 
@@ -71,8 +73,8 @@ ls4rexx is published under the Eclipse Public License 2.0
 
 ## Building and Contributing
 
-To build and contribute to ls4rexx consult the [Contributing Guilde](https://github.com/holzem/ls4rexx/blob/master/CONTRIBUTING.md)
+To build and contribute to ls4rexx consult the [Contributing Guilde](CONTRIBUTING.md)
 
 ## Acknowledgements
 
-This projects makes use of third party projects. Refer to the [Acknowledgements Information](https://github.com/holzem/ls4rexx/blob/master/ACKNOWLEDGEMENT.md)   
+This projects makes use of third party projects. Refer to the [Acknowledgements Information](ACKNOWLEDGEMENT.md)   

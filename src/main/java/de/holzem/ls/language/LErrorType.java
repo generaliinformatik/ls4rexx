@@ -25,7 +25,11 @@ public enum LErrorType
 	/** unclosed string */
 	E_UNCLOSED_STRING("Unclosed string"),
 	/** illegal character */
-	E_ILLEGAL_CHAR("Illegal character");
+	E_ILLEGAL_CHAR("Illegal character"),
+	/** unclosed do keyword */
+	E_UNMATCHED_DO("Unmatched do keyword"),
+	/** unmatched end keyword */
+	E_UNMATCHED_END("Unmatched end keyword");
 
 	private String _message;
 

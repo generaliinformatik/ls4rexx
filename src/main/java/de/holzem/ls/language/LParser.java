@@ -84,8 +84,14 @@ public enum LParser
 				pCancelChecker.checkCanceled();
 			}
 		}
+		// merge lexer and parser errors
+		handler.finishParsing();
+		final LErrors errors = new LErrors();
+		errors.addAllErrors(lexer.getErrors());
+		errors.addAllErrors(handler.getErrors());
+		// create model from data
 		final LModel lModel = new LModel.LModelBuilder().uri(pUri).tokens(tokens).variables(handler.getVariables())
-				.labels(handler.getLabels()).cancelChecker(pCancelChecker).errors(lexer.getErrors()).build();
+				.labels(handler.getLabels()).cancelChecker(pCancelChecker).errors(errors).build();
 		log.debug("parsing done {}: {} variables, {} labels", pUri, handler.getVariables().size(),
 				handler.getLabels().size());
 		return lModel;

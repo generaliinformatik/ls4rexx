@@ -29,6 +29,11 @@ public class LErrors
 		_errors.add(error);
 	}
 
+	public void addAllErrors(final LErrors pLErrors)
+	{
+		_errors.addAll(pLErrors._errors);
+	}
+
 	public LError getError(final int pIndex)
 	{
 		return _errors.get(pIndex);

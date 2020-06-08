@@ -127,9 +127,9 @@ class LModelTest
 	}
 
 	@Test
-	void testErrors()
+	void testBasicErrors()
 	{
-		final String uri = "rexx/errors.rex";
+		final String uri = "rexx/errors/basic.rex";
 		final String testResourceContent = TestResource.getContent(uri);
 		final LModel lModel = LParser.INSTANCE.parse(uri, testResourceContent);
 		// Basic error informatio
@@ -156,5 +156,41 @@ class LModelTest
 		final LError error5 = errors.getError(4);
 		assertThat(error5.getErrorType(), is(equalTo(LErrorType.E_UNCLOSED_COMMENT)));
 		assertThat(error5.getToken().getText(), startsWith("/* comment without end"));
+	}
+
+	@Test
+	void testMissingEndError()
+	{
+		final String uri = "rexx/errors/missing-end.rex";
+		final String testResourceContent = TestResource.getContent(uri);
+		final LModel lModel = LParser.INSTANCE.parse(uri, testResourceContent);
+		// Basic error informatio
+		final LErrors errors = lModel.getErrors();
+		assertThat(errors.hasErrors(), is(true));
+		assertThat(errors.getNumberOfErrors(), is(equalTo(1)));
+		// unmatched do
+		final LError error0 = errors.getError(0);
+		assertThat(error0.getErrorType(), is(equalTo(LErrorType.E_UNMATCHED_DO)));
+		assertThat(error0.getToken().getLine(), is(equalTo(2)));
+	}
+
+	@Test
+	void testAdditionalEndError()
+	{
+		final String uri = "rexx/errors/additional-end.rex";
+		final String testResourceContent = TestResource.getContent(uri);
+		final LModel lModel = LParser.INSTANCE.parse(uri, testResourceContent);
+		// Basic error informatio
+		final LErrors errors = lModel.getErrors();
+		assertThat(errors.hasErrors(), is(true));
+		assertThat(errors.getNumberOfErrors(), is(equalTo(2)));
+		// first unmatched end
+		final LError error1 = errors.getError(0);
+		assertThat(error1.getErrorType(), is(equalTo(LErrorType.E_UNMATCHED_END)));
+		assertThat(error1.getToken().getLine(), is(equalTo(6)));
+		// second unmatched end
+		final LError error2 = errors.getError(1);
+		assertThat(error2.getErrorType(), is(equalTo(LErrorType.E_UNMATCHED_END)));
+		assertThat(error2.getToken().getLine(), is(equalTo(7)));
 	}
 }
