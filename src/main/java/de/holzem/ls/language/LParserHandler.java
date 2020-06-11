@@ -46,7 +46,7 @@ class LParserHandler
 				_inParseStatement = false;
 			}
 		}
-		if (Objects.equals("do", keyword)) {
+		if (Objects.equals("do", keyword) || Objects.equals("select", keyword)) {
 			_doStack.push(pCurrentToken);
 		}
 		if (Objects.equals("end", keyword)) {
