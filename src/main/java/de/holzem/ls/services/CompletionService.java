@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.lsp4j.CompletionItem;
@@ -25,7 +24,9 @@ import org.eclipse.lsp4j.CompletionItemKind;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.CompletionOptions;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.ServerCapabilities;
+import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.CancelChecker;
 
 import de.holzem.ls.language.LModel;
@@ -47,21 +48,22 @@ public class CompletionService extends LService
 		pServerCapabilities.setCompletionProvider(completionOptions);
 	}
 
-	public CompletionList doComplete(final CancelChecker pCancelChecker, final LModel pLModel, final Position pPosition)
+	public CompletionList doComplete(final CancelChecker pCancelChecker, final LModel pLModel,
+			final Position pCursorPosition)
 	{
-		final int line = pPosition.getLine();
-		final int column = pPosition.getCharacter();
+		final int line = pCursorPosition.getLine();
+		final int column = pCursorPosition.getCharacter();
 		log.debug("complete for {} at ({},{})", pLModel.getUri(), line, column);
-		final int tokenPosition = getTokenPosition(pLModel, line, column);
-		log.debug("match with token {}", pLModel.getToken(tokenPosition));
+		final int tokenPosition = pLModel.locateCompletionToken(line, column);
+		log.debug("match ({},{}) with token {}", line, column, pLModel.getToken(tokenPosition));
 		final List<CompletionItem> completionItems = new ArrayList<>();
 		final LTokenType tokenType = pLModel.getToken(tokenPosition).getType();
 		final boolean isComment = (tokenType == LTokenType.COMMENT || tokenType == LTokenType.COMMENT_UNCLOSED);
 		if (!isComment) {
-			addVariablesToCompletionItems(pCancelChecker, pLModel, tokenPosition, completionItems);
-			addLabelsToCompletionItems(pCancelChecker, pLModel, tokenPosition, completionItems);
-			addKeywordsToCompletionItems(pCancelChecker, pLModel, tokenPosition, completionItems);
-			addFunctionsToCompletionItems(pCancelChecker, pLModel, tokenPosition, completionItems);
+			addVariablesToCompletionItems(pCancelChecker, pLModel, tokenPosition, pCursorPosition, completionItems);
+			addLabelsToCompletionItems(pCancelChecker, pLModel, tokenPosition, pCursorPosition, completionItems);
+			addKeywordsToCompletionItems(pCancelChecker, pLModel, tokenPosition, pCursorPosition, completionItems);
+			addFunctionsToCompletionItems(pCancelChecker, pLModel, tokenPosition, pCursorPosition, completionItems);
 		}
 		final CompletionList completionList = new CompletionList();
 		completionList.setIsIncomplete(true);
@@ -69,23 +71,12 @@ public class CompletionService extends LService
 		return completionList;
 	}
 
-	private int getTokenPosition(final LModel pLModel, final int pLine, final int pColumn)
-	{
-		int tokenPosition = pLModel.locatePrevToken(pLine, pColumn);
-		final LToken token = pLModel.getToken(tokenPosition);
-		if (token.getType() == LTokenType.WHITESPACE && token.getLine() == pLine && token.getColumn() == pColumn) {
-			if (tokenPosition > 0) {
-				--tokenPosition;
-			}
-		}
-		return tokenPosition;
-	}
-
 	private void addVariablesToCompletionItems(final CancelChecker pCancelChecker, final LModel pLModel,
-			final int pTokenPosition, final List<CompletionItem> pCompletionItems)
+			final int pTokenPosition, final Position pCursorPosition, final List<CompletionItem> pCompletionItems)
 	{
 		final LToken token = pLModel.getToken(pTokenPosition);
 		final String tokenText = token.getText();
+		final String tokenTextLowerCase = tokenText.toLowerCase();
 		final boolean isLikeWhitespace = (token.getType() == LTokenType.LEFT_PARENTHESIS
 				|| token.getType() == LTokenType.WHITESPACE);
 		final Set<String> collected = new HashSet<String>();
@@ -93,20 +84,21 @@ public class CompletionService extends LService
 			if (pCancelChecker != null)
 				pCancelChecker.checkCanceled();
 			final String variableText = variable.getText();
+			final String variableTextLowerCase = variableText.toLowerCase();
 			// take only variables with a similar text
-			if (isLikeWhitespace || variableText.startsWith(tokenText)) {
-				if (!Objects.equals(variableText, tokenText)) {
-					if (!collected.contains(variableText)) {
-						addVariableWithStemParts(pCompletionItems, variableText, tokenText.length(), collected);
-					}
+			if (isLikeWhitespace || variableTextLowerCase.startsWith(tokenTextLowerCase)) {
+				if (!collected.contains(variableText)) {
+					addVariableWithStemParts(pCompletionItems, token, pCursorPosition, variableText, tokenText.length(),
+							collected);
 				}
 			}
 		}
 		collected.clear();
 	}
 
-	private void addVariableWithStemParts(final List<CompletionItem> pCompletionItems, final String variableText,
-			final int pMinLength, final Set<String> pCollected)
+	private void addVariableWithStemParts(final List<CompletionItem> pCompletionItems, final LToken pToken,
+			final Position pCursorPosition, final String variableText, final int pMinLength,
+			final Set<String> pCollected)
 	{
 		int substringEnd = -1;
 		do {
@@ -116,6 +108,7 @@ public class CompletionService extends LService
 				final CompletionItem completionItem = new CompletionItem(part);
 				completionItem.setKind(CompletionItemKind.Variable);
 				completionItem.setInsertText(part);
+				completionItem.setTextEdit(getTextEditForToken(pToken, pCursorPosition, part));
 				completionItem.setDetail("Variable " + part);
 				pCompletionItems.add(completionItem);
 				pCollected.add(part);
@@ -124,64 +117,87 @@ public class CompletionService extends LService
 	}
 
 	private void addLabelsToCompletionItems(final CancelChecker pCancelChecker, final LModel pLModel,
-			final int pTokenPosition, final List<CompletionItem> pCompletionItems)
+			final int pTokenPosition, final Position pCursorPosition, final List<CompletionItem> pCompletionItems)
 	{
 		final LToken token = pLModel.getToken(pTokenPosition);
 		final String tokenText = token.getText();
+		final String tokenTextLowerCase = tokenText.toLowerCase();
+		final boolean isLikeWhitespace = (token.getType() == LTokenType.LEFT_PARENTHESIS
+				|| token.getType() == LTokenType.WHITESPACE);
 		for (final LToken label : pLModel.getLabels()) {
 			if (pCancelChecker != null)
 				pCancelChecker.checkCanceled();
 			final String labelText = label.getText();
-			if (labelText.startsWith(tokenText)) {
-				if (!Objects.equals(labelText, tokenText)) {
-					final CompletionItem completionItem = new CompletionItem(labelText);
-					completionItem.setKind(CompletionItemKind.Method);
-					completionItem.setInsertText(labelText);
-					completionItem.setDetail("Label " + label);
-					pCompletionItems.add(completionItem);
-				}
+			final String labelTextLowerCase = labelText.toLowerCase();
+			if (isLikeWhitespace || labelTextLowerCase.startsWith(tokenTextLowerCase)) {
+				final CompletionItem completionItem = new CompletionItem(labelText);
+				completionItem.setKind(CompletionItemKind.Method);
+				completionItem.setTextEdit(getTextEditForToken(token, pCursorPosition, labelText));
+				completionItem.setDetail("Label " + label.getText());
+				pCompletionItems.add(completionItem);
 			}
 		}
 	}
 
 	private void addFunctionsToCompletionItems(final CancelChecker pCancelChecker, final LModel pLModel,
-			final int pTokenPosition, final List<CompletionItem> pCompletionItems)
+			final int pTokenPosition, final Position pCursorPosition, final List<CompletionItem> pCompletionItems)
 	{
 		final LToken token = pLModel.getToken(pTokenPosition);
 		final String tokenText = token.getText();
+		final String tokenTextLowerCase = tokenText.toLowerCase();
 		for (final String function : FUNCTIONS) {
 			if (pCancelChecker != null)
 				pCancelChecker.checkCanceled();
-			if (function.startsWith(tokenText)) {
-				if (!Objects.equals(function, tokenText)) {
-					final CompletionItem completionItem = new CompletionItem(function);
-					completionItem.setKind(CompletionItemKind.Function);
-					completionItem.setInsertText(function);
-					completionItem.setDetail("Function " + function);
-					pCompletionItems.add(completionItem);
-				}
+			final String functionLowerCase = function.toLowerCase();
+			if (functionLowerCase.startsWith(tokenTextLowerCase)) {
+				final CompletionItem completionItem = new CompletionItem(function);
+				completionItem.setKind(CompletionItemKind.Function);
+				completionItem.setTextEdit(getTextEditForToken(token, pCursorPosition, function));
+				completionItem.setDetail("Function " + function);
+				pCompletionItems.add(completionItem);
 			}
 		}
 	}
 
 	private void addKeywordsToCompletionItems(final CancelChecker pCancelChecker, final LModel pLModel,
-			final int pTokenPosition, final List<CompletionItem> pCompletionItems)
+			final int pTokenPosition, final Position pCursorPosition, final List<CompletionItem> pCompletionItems)
 	{
 		final LToken token = pLModel.getToken(pTokenPosition);
 		final String tokenText = token.getText();
+		final String tokenTextLowerCase = tokenText.toLowerCase();
 		for (final String keyword : KEYWORDS) {
 			if (pCancelChecker != null)
 				pCancelChecker.checkCanceled();
-			if (keyword.startsWith(tokenText)) {
-				if (!Objects.equals(keyword, tokenText)) {
-					final CompletionItem completionItem = new CompletionItem(keyword);
-					completionItem.setKind(CompletionItemKind.Keyword);
-					completionItem.setInsertText(keyword);
-					completionItem.setDetail("Keyword " + keyword);
-					pCompletionItems.add(completionItem);
-				}
+			final String keyWordLowerCase = keyword.toLowerCase();
+			if (keyWordLowerCase.startsWith(tokenTextLowerCase)) {
+				final CompletionItem completionItem = new CompletionItem(keyword);
+				completionItem.setKind(CompletionItemKind.Keyword);
+				completionItem.setInsertText(keyword);
+				completionItem.setTextEdit(getTextEditForToken(token, pCursorPosition, keyword));
+				completionItem.setDetail("Keyword " + keyword);
+				pCompletionItems.add(completionItem);
 			}
 		}
+	}
+
+	private TextEdit getTextEditForToken(final LToken pToken, final Position pCursorPosition, final String pNewText)
+	{
+		final boolean isLikeWhitespace = (pToken.getType() == LTokenType.LEFT_PARENTHESIS
+				|| pToken.getType() == LTokenType.WHITESPACE);
+		final Range range = new Range();
+		if (isLikeWhitespace) {
+			range.setStart(pCursorPosition);
+			range.setEnd(pCursorPosition);
+		} else {
+			final int line = pToken.getLine();
+			final int startColumn = pToken.getColumn();
+			final int length = pToken.getText().length();
+			final int endColumn = startColumn + length;
+			range.setStart(new Position(line, startColumn));
+			range.setEnd(new Position(line, endColumn));
+		}
+		final TextEdit textEdit = new TextEdit(range, pNewText);
+		return textEdit;
 	}
 
 	private static final String[] COMPLETION_TRIGGER_CHARACTERS = { "_", "$", ".", //

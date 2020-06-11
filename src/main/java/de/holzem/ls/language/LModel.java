@@ -25,12 +25,14 @@ import org.eclipse.lsp4j.jsonrpc.CancelChecker;
 
 import lombok.Builder;
 import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * LModel accumulates all information gained from the LParser.
  */
 @Value
 @Builder
+@Slf4j
 public final class LModel
 {
 	private static final LToken NULL_TOKEN = new LToken(LTokenType.COMMENT, "", 0, 0, 0);
@@ -77,22 +79,11 @@ public final class LModel
 		return position;
 	}
 
-	public int locatePrevToken(final int pLine, final int pColumn)
+	public int locateCompletionToken(final int pLine, final int pColumn)
 	{
-		int position = locateToken(pLine, pColumn);
-		// if found token is a comment do not look any further
-		final LTokenType tokenType = getToken(position).getType();
-		if (tokenType == LTokenType.COMMENT || tokenType == LTokenType.COMMENT_UNCLOSED
-				|| tokenType == LTokenType.DQUOTE_STRING || tokenType == LTokenType.DQUOTE_STRING_UNCLOSED
-				|| tokenType == LTokenType.SQUOTE_STRING || tokenType == LTokenType.SQUOTE_STRING_UNCLOSED) {
-			return position;
-		}
-		// if the found token is the last token and not whitespace take this token
-		if (position == tokens.size() - 1 && tokenType != LTokenType.WHITESPACE) {
-			return position;
-		}
-		// take previous token
-		return (position > 0 ? --position : position);
+		final int position = locateToken(pLine, pColumn >= 1 ? pColumn - 1 : pColumn);
+		log.trace("match ({},{}) -> {}", pLine, pColumn, getToken(position));
+		return position;
 	}
 
 	private static class LTokenPositionComparator implements Comparator<LToken>

@@ -34,11 +34,6 @@ but not parsed into an [abstract syntax tree](https://en.wikipedia.org/wiki/Abst
 features should help during typing and navigating, but there is no guarantee that e.g. a completion hint will 
 be proper syntax for the current cursor position.
 
-### Convention over configuration?
-
-Currently the language support follows a certain coding style, e.g. labels/procedures are in uppercase, variables
-are in lowercase. I do not know when I will get around to make this more configurable.
-
 ### Features in progress
 
 * [textDocument/completion](https://microsoft.github.io/language-server-protocol/specification#textDocument_completion).
