@@ -1,5 +1,5 @@
 /**
- *  Copyright (c) 2020 Markus Holzem
+ *  Copyright (c) 2020 Generali Deutschland AG - Team Informatik
  *
  *  All rights reserved. This program and the accompanying materials
  *  are made available under the terms of the Eclipse Public License v2.0
@@ -9,14 +9,14 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  *  Contributors:
- *  Markus Holzem <markus@holzem.de>
+ *  Markus Holzem <markus.holzem@generali.com>
  *
  * Based on the jflex-1.8.1/examples/simple
  */
-package de.holzem.ls.language;
+package de.generali.dev.ls.language;
 
-import static de.holzem.ls.language.LTokenType.*;
-import static de.holzem.ls.language.LErrorType.*;
+import static de.generali.dev.ls.language.LTokenType.*;
+import static de.generali.dev.ls.language.LErrorType.*;
 
 %%
 

@@ -2,7 +2,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>de.holzem.ls</groupId>
+	<groupId>de.generali.dev.ls</groupId>
 	<artifactId>ls4rexx</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<properties>
@@ -135,7 +135,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>de.holzem.ls.LServer</mainClass>
+							<mainClass>de.generali.dev.ls.LServer</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>

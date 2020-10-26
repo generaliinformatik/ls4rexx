@@ -51,16 +51,16 @@ My current [TODO](TODO.md) list...
 
 ## Developer
 
-To debug ls4rexx you can use `de.holzem.ls.test.LServerSocketLauncher`:
+To debug ls4rexx you can use `de.generali.dev.ls.test.LServerSocketLauncher`:
 
-1. Run the `de.holzem.ls.test.LServerSocketLauncher` in debug mode (e.g. in eclipse)
+1. Run the `de.generali.dev.ls.test.LServerSocketLauncher` in debug mode (e.g. in eclipse)
 2. Connect your client via socket port. Default port is 5008, but you can change it with start argument `--port` in step 1
 
 ## Clients
 
 Currently there is only the following client available:
 
-* Eclipse IDE support with [rexx4e](https://github.com/holzem/rexx4e "rexx4e")
+* Eclipse IDE support with [rexx4e](https://github.com/generaliinformatik/rexx4e "rexx4e")
 
 ## Licenses
 
