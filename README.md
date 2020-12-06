@@ -44,6 +44,21 @@ My current [TODO](TODO.md) list...
 
 ## Get started
 
+Use use the [Eclipse Installer](http://www.eclipse.org/downloads/packages/installer) to create a separate Eclipse installation
+to work on the projects [ls4rexx](https://github.com/generaliinformatik/ls4rexx) and [rexx4e](https://github.com/generaliinformatik/rexx4e).
+
+Start the Eclipse Installer in `Advanced mode`. Select `Eclipse IDE for RCP and RAP developers` as the product. 
+Product Version should be `Photon` if you want to target IBM Developer for z/OS (starting from version 15.x) or 
+Compuware Topaz Workbench (starting from version 20.x). 
+On the projects page add an Eclipse Project with the URI 
+[https://raw.githubusercontent.com/generaliinformatik/rexx4e/master/rexx4e.setup](https://raw.githubusercontent.com/generaliinformatik/rexx4e/master/rexx4e.setup)
+and select the Rexx4e project. After finishing the installation and the start of the project the result is:
+* missing plugins will be added to the product
+* repositories will be cloned and imported
+* repositories will be built using maven
+
+A more manual approach is
+
 * Clone this repository
 * Open the folder in your terminal / command line
 * Run `./mvnw clean verify` (OSX, Linux) or `mvnw.cmd clean verify` (Windows)
